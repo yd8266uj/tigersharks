@@ -13,7 +13,7 @@ import org.json.simple.parser.JSONParser;
 
 //Object type should be something more specific
 public class FileReader implements Supplier<Loanable> {
-    private final LinkedList<Object> data = new LinkedList<>();
+    private final LinkedList<JSONObject> data = new LinkedList<>();
 
     public FileReader(java.io.FileReader file) {
         JSONParser parser = new JSONParser(); 
