@@ -8,7 +8,7 @@ import java.time.LocalDate;
 abstract public class LibraryItem implements Loanable {
     private final String itemName;
     private final String itemId;
-    private Boolean isCheckedOut;
+    protected Boolean isCheckedOut;
     private enum Type {CD,DVD,BOOK,MAGAZINE}
 
     private LibraryItem(String itemName, String itemId) {
@@ -18,11 +18,17 @@ abstract public class LibraryItem implements Loanable {
     }
 
     public LocalDate checkout() {
-        return null;
+        if(!getCheckedout(){
+            this.isCheckedOut = true;
+            return((LocalDate.now().plus(1, ChronoUnit.WEEKS)));
+        }
+        else
+            return null;
     }
 
     public Boolean checkin() {
-        return null;
+        this.isCheckedOut = false;
+        return true;
     }
 
     public String getItemName() {
@@ -73,8 +79,13 @@ abstract public class LibraryItem implements Loanable {
 
         @Override
         public LocalDate checkout() {
-            return null;
-        }
+            if(!getCheckedout(){
+                this.isCheckedOut = true;
+                return((LocalDate.now().plus(3, ChronoUnit.WEEKS)));
+            }
+             else
+                  return null;
+           
     }
 
     private static class CD extends LibraryItem {
