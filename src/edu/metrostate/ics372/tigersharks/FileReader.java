@@ -30,6 +30,10 @@ public class FileReader implements Supplier<Loanable> {
         return new Map().apply(data.pollFirst());
     }
 
+    public int size() {
+        return data.size();
+    }
+
     private static class Map implements Function<JSONObject, Loanable> {
         @Override
         public Loanable apply(JSONObject o) {
