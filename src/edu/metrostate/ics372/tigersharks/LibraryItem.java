@@ -1,6 +1,7 @@
 package edu.metrostate.ics372.tigersharks;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Created by sleig on 1/24/2017.
@@ -18,16 +19,15 @@ abstract public class LibraryItem implements Loanable {
     }
 
     public LocalDate checkout() {
-        if(!getCheckedout(){
-            this.isCheckedOut = true;
-            return((LocalDate.now().plus(1, ChronoUnit.WEEKS)));
+        if(!isCheckedOut) {
+            isCheckedOut = true;
+            return LocalDate.now().plus(1, ChronoUnit.WEEKS);
         }
-        else
-            return null;
+        return null;
     }
 
     public Boolean checkin() {
-        this.isCheckedOut = false;
+        isCheckedOut = false;
         return true;
     }
 
@@ -79,14 +79,12 @@ abstract public class LibraryItem implements Loanable {
 
         @Override
         public LocalDate checkout() {
-            if(!getCheckedout(){
-                this.isCheckedOut = true;
-                return((LocalDate.now().plus(3, ChronoUnit.WEEKS)));
+            if (!isCheckedOut) {
+                isCheckedOut = true;
+                return ((LocalDate.now().plus(3, ChronoUnit.WEEKS)));
             }
-             else
-                  return null;
-           
-    }
+            return null;
+        }}
 
     private static class CD extends LibraryItem {
         private final String itemArtist;
