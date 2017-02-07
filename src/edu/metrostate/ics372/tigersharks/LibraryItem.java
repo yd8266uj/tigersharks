@@ -81,10 +81,11 @@ abstract public class LibraryItem implements Loanable {
         public LocalDate checkout() {
             if (!isCheckedOut) {
                 isCheckedOut = true;
-                return ((LocalDate.now().plus(3, ChronoUnit.WEEKS)));
+                return LocalDate.now().plus(3, ChronoUnit.WEEKS);
             }
             return null;
-        }}
+        }
+    }
 
     private static class CD extends LibraryItem {
         private final String itemArtist;

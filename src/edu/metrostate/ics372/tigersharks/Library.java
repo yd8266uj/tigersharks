@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -35,15 +36,29 @@ public class Library {
 
     public static void main(String args[]) {
         Library library;
+
         try {
             library = new Library(new FileReader(new java.io.FileReader(new FileInputStream(args[0]).toString())));
-
-            if(args[0].equalsIgnoreCase("checkin")){
-                library.checkin(args[1]);
-            }
-
-            if(args[0].equalsIgnoreCase("checkout")){
-                library.checkout(args[1]);
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                String[] input = scanner.next().split(" ");
+                switch (input[0].toLowerCase()) {
+                    case "checkin":
+                        if (library.checkin(args[1])) {
+                            System.out.println("Item " + args[1] + " checked in");
+                        }
+                        break;
+                    case "checkout":
+                        LocalDate dueDate = library.checkout(args[1]);
+                        break;
+                    case "exit":
+                        return;
+                    default:
+                        System.out.println("Usage:");
+                        System.out.println("\tcheckin <itemid>");
+                        System.out.println("\tcheckout <itemid>");
+                        System.out.println("\texit");
+                }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
