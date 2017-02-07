@@ -1,12 +1,14 @@
 package edu.metrostate.ics372.tigersharks;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject; 
-import org.json.simple.parser.JSONParser; 
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 /**
  * Created by sleig on 1/29/2017.
  */
@@ -16,13 +18,11 @@ public class FileReader implements Supplier<Loanable> {
     private final LinkedList<JSONObject> data = new LinkedList<>();
 
     public FileReader(java.io.FileReader file) {
-        JSONParser parser = new JSONParser(); 
-            Object object = parser. 
-                    parse(file); 
-        JSONObject jsonObject = (JSONObject) object; 
-        JSONArray LibraryItems = (JSONArray)jsonObject.get("library_items"); 
-        data.add(LibraryItems); 
-        //initialize data here
+        try {
+            data.addAll((JSONArray)((JSONObject) new JSONParser().parse(file)).get("library_items"));
+        } catch (IOException|ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -32,7 +32,7 @@ public class FileReader implements Supplier<Loanable> {
 
     private static class Map implements Function<JSONObject, Loanable> {
         @Override
-        public Loanable apply(Object o) {
+        public Loanable apply(JSONObject o) {
             return null;
         }
     }

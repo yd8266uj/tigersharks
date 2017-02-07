@@ -1,6 +1,5 @@
 package edu.metrostate.ics372.tigersharks;
 
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
@@ -35,11 +34,21 @@ public class Library {
     }
 
     public static void main(String args[]) {
-
+        Library library;
         try {
-            Library library = new Library(new FileReader(new BufferedInputStream(new FileInputStream(args[0]))));
+            library = new Library(new FileReader(new java.io.FileReader(new FileInputStream(args[0]).toString())));
+
+            if(args[0].equalsIgnoreCase("checkin")){
+                library.checkin(args[1]);
+            }
+
+            if(args[0].equalsIgnoreCase("checkout")){
+                library.checkout(args[1]);
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+
     }
 }
