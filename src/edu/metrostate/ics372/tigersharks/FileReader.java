@@ -17,8 +17,7 @@ public class FileReader implements Supplier<Loanable> {
 
     public FileReader(java.io.FileReader file) {
         try {
-            JSONArray libraryItems = (JSONArray)((JSONObject) new JSONParser().parse( file )).get("library_items");
-            data.addAll(libraryItems);
+            data.addAll((JSONArray)((JSONObject) new JSONParser().parse( file )).get("library_items"));
         } catch (IOException|ParseException e) {
             e.printStackTrace();
         }
@@ -26,8 +25,7 @@ public class FileReader implements Supplier<Loanable> {
 
     @Override
     public Loanable get() {
-        JSONObject j = data.pollFirst();
-        return new Map().apply(j);
+        return new Map().apply(data.pollFirst());
     }
 
     public int size() {
@@ -37,7 +35,7 @@ public class FileReader implements Supplier<Loanable> {
     private static class Map implements Function<JSONObject, Loanable> {
         @Override
         public Loanable apply(JSONObject o) {
-            if(o==null) return null;
+            if(!o.containsKey("item_key")) return null;
             switch (o.get("item_type").toString().toLowerCase()) {
                 case "cd":
                     return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString());
