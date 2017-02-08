@@ -10,7 +10,7 @@ abstract public class LibraryItem implements Loanable {
     private final String itemName;
     private final String itemId;
     protected Boolean isCheckedOut;
-    private enum Type {CD,DVD,BOOK,MAGAZINE}
+    public enum Type {CD,DVD,BOOK,MAGAZINE}
 
     private LibraryItem(String itemName, String itemId) {
         this.itemName = itemName;

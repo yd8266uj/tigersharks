@@ -1,13 +1,19 @@
 package edu.metrostate.ics372.tigersharks;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject; 
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import sun.misc.IOUtils;
+import sun.nio.ch.IOUtil;
 
 /**
  * Created by sleig on 1/29/2017.
@@ -19,7 +25,8 @@ public class FileReader implements Supplier<Loanable> {
 
     public FileReader(java.io.FileReader file) {
         try {
-            data.addAll((JSONArray)((JSONObject) new JSONParser().parse(file)).get("library_items"));
+            JSONArray libraryItems = (JSONArray)((JSONObject) new JSONParser().parse( file )).get("library_items");
+            data.addAll(libraryItems);
         } catch (IOException|ParseException e) {
             e.printStackTrace();
         }
@@ -27,7 +34,8 @@ public class FileReader implements Supplier<Loanable> {
 
     @Override
     public Loanable get() {
-        return new Map().apply(data.pollFirst());
+        JSONObject j = data.pollFirst();
+        return new Map().apply(j);
     }
 
     public int size() {
@@ -37,6 +45,17 @@ public class FileReader implements Supplier<Loanable> {
     private static class Map implements Function<JSONObject, Loanable> {
         @Override
         public Loanable apply(JSONObject o) {
+            if(o==null) return null;
+            switch (o.get("item_type").toString().toLowerCase()) {
+                case "cd":
+                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString());
+                case "dvd":
+                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.DVD);
+                case "magazine":
+                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.MAGAZINE);
+                case "book":
+                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.BOOK, o.get("item_author").toString());
+            }
             return null;
         }
     }

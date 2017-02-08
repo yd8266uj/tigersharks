@@ -2,7 +2,9 @@ package edu.metrostate.ics372.tigersharks;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.security.KeyException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.function.Function;
@@ -19,6 +21,7 @@ public class Library {
     public Library(Supplier<Loanable> supplier) {
 
         this.catalog = Stream.generate(supplier)
+                .limit(((FileReader) supplier).size())
                 .collect(Collectors.toMap(
                     Loanable::getItemId,
                     Function.identity(),
@@ -27,29 +30,49 @@ public class Library {
     }
 
     public LocalDate checkout(String itemId) {
-        return catalog.get(itemId).checkout();
+        if(catalog.containsKey(itemId)) {
+            return catalog.get(itemId).checkout();
+        }
+        return null;
     }
 
     public boolean checkin(String itemId) {
-        return catalog.get(itemId).checkin();
+        if(catalog.containsKey(itemId)) {
+            return catalog.get(itemId).checkin();
+        }
+        return false;
     }
 
     public static void main(String args[]) {
         Library library;
 
         try {
-            library = new Library(new FileReader(new java.io.FileReader(new FileInputStream(args[0]).toString())));
+            library = new Library(
+                    new FileReader(
+                            new java.io.FileReader("C:\\Users\\sleig\\Desktop\\example.json")
+                    )
+            );
             Scanner scanner = new Scanner(System.in);
             while (true) {
-                String[] input = scanner.next().split(" ");
-                switch (input[0].toLowerCase()) {
+                String input;
+                input = scanner.next();
+                switch (input.toLowerCase()) {
                     case "checkin":
-                        if (library.checkin(args[1])) {
-                            System.out.println("Item " + args[1] + " checked in");
+                        input = scanner.next();
+                        if (library.checkin(input)) {
+                            System.out.println("Item " + input + " checked in");
+                        } else {
+                            System.out.println("Item " + input + " could not be checked in");
                         }
                         break;
                     case "checkout":
-                        LocalDate dueDate = library.checkout(args[1]);
+                        input = scanner.next();
+                        LocalDate dueDate = library.checkout(input);
+                        if (dueDate != null) {
+                            System.out.println("Item " + input + " is due on " + dueDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                        } else {
+                            System.out.println("Item " + input + " could not be checked out");
+                        }
                         break;
                     case "exit":
                         return;
