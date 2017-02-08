@@ -1,25 +1,17 @@
 package edu.metrostate.ics372.tigersharks;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject; 
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import sun.misc.IOUtils;
-import sun.nio.ch.IOUtil;
 
 /**
  * Created by sleig on 1/29/2017.
  */
-
-//Object type should be something more specific
 public class FileReader implements Supplier<Loanable> {
     private final LinkedList<JSONObject> data = new LinkedList<>();
 

@@ -1,8 +1,6 @@
 package edu.metrostate.ics372.tigersharks;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.security.KeyException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -19,8 +17,7 @@ public class Library {
     private final HashMap<String, Loanable> catalog;
 
     public Library(Supplier<Loanable> supplier) {
-
-        this.catalog = Stream.generate(supplier)
+        catalog = Stream.generate(supplier)
                 .limit(((FileReader) supplier).size())
                 .collect(Collectors.toMap(
                     Loanable::getItemId,
@@ -44,18 +41,11 @@ public class Library {
     }
 
     public static void main(String args[]) {
-        Library library;
-
         try {
-            library = new Library(
-                    new FileReader(
-                            new java.io.FileReader("C:\\Users\\sleig\\Desktop\\example.json")
-                    )
-            );
+            Library library = new Library(new FileReader(new java.io.FileReader(args[0])));
             Scanner scanner = new Scanner(System.in);
             while (true) {
-                String input;
-                input = scanner.next();
+                String input = scanner.next();
                 switch (input.toLowerCase()) {
                     case "checkin":
                         input = scanner.next();
@@ -86,7 +76,5 @@ public class Library {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-
     }
 }
