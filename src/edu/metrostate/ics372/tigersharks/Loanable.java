@@ -3,9 +3,13 @@ package edu.metrostate.ics372.tigersharks;
 import java.time.LocalDate;
 
 /**
- * Created by sleig on 1/29/2017.
+ * Responsible for providing a way to checkin/out library items.
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public interface Loanable {
+
     /**
      * Try to check out Loanable
      *

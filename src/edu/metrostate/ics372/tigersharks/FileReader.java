@@ -11,8 +11,12 @@ import org.json.simple.parser.ParseException;
 
 /**
  * Responsible for generating a supply of Loanable items from a JSON file.
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
-public class FileReader implements Supplier<Loanable> {
+class FileReader implements Supplier<Loanable> {
+
     /**
      * A list of items read from the file reader.
      */
@@ -25,9 +29,9 @@ public class FileReader implements Supplier<Loanable> {
      *
      * @param file initialized with path to json file.
      */
-    public FileReader(java.io.FileReader file) {
+    FileReader(java.io.FileReader file) {
         try {
-            data.addAll((JSONArray)((JSONObject) new JSONParser().parse( file )).get("library_items"));
+            data.addAll((JSONArray)((JSONObject) new JSONParser().parse( file )).get("library_items")); // parse file as json get library items as a list and add each element to data
         } catch (IOException|ParseException e) {
             e.printStackTrace();
         }
@@ -50,7 +54,7 @@ public class FileReader implements Supplier<Loanable> {
      *
      * @return the length of data
      */
-    public int size() {
+    int size() {
         return data.size();
     }
 
@@ -58,6 +62,7 @@ public class FileReader implements Supplier<Loanable> {
      * Responsible for converting parsed JSONObjects to a Loanable.
      */
     private static class Map implements Function<JSONObject, Loanable> {
+
         /**
          * A mapping function. converts a JSONObject to a Loanable.
          *
@@ -66,16 +71,18 @@ public class FileReader implements Supplier<Loanable> {
          */
         @Override
         public Loanable apply(JSONObject o) {
-            if(!o.containsKey("item_type")) return null;
+            if(!o.containsKey("item_type")) { // is there an item type field?
+                return null; // could not create Loanable
+            }
             switch (o.get("item_type").toString().toLowerCase()) {
                 case "cd":
-                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString());
+                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString()); // return new LibraryItem.CD(...) from static factory
                 case "dvd":
-                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.DVD);
+                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.DVD); // return new LibraryItem.DVD(...) from static factory
                 case "magazine":
-                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.MAGAZINE);
+                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.MAGAZINE); // return new LibraryItem.Magazine(...) from static factory
                 case "book":
-                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.BOOK, o.get("item_author").toString());
+                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.BOOK, o.get("item_author").toString()); // return new LibraryItem.Book(...) from static factory
             }
             return null;
         }
