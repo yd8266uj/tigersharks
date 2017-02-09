@@ -46,7 +46,7 @@ class FileReader implements Supplier<Loanable> {
      */
     @Override
     public Loanable get() {
-        return new Map().apply(data.pollFirst());
+        return new Map().apply(data.pollFirst()); // create a loanable from the next data item and return it
     }
 
     /**
