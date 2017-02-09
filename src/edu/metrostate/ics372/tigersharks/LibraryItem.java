@@ -76,7 +76,7 @@ abstract class LibraryItem implements Loanable {
      * @return success value
      */
     public Boolean checkin() {
-        return isCheckedOut.compareAndSet(false,true); // is checked out? checkin and return true
+        return isCheckedOut.compareAndSet(true,false); // is checked out? checkin and return true
     }
 
     /**
