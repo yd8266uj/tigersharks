@@ -1,9 +1,14 @@
-package edu.metrostate.ics372.tigersharks;
+package edu.metrostate.ics372.tigersharks.io;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import edu.metrostate.ics372.tigersharks.LibraryItem;
+import edu.metrostate.ics372.tigersharks.Loanable;
+import edu.metrostate.ics372.tigersharks.Streamable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject; 
 import org.json.simple.parser.JSONParser;
@@ -15,7 +20,7 @@ import org.json.simple.parser.ParseException;
  * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
  * @version 1
  */
-class FileReader implements Supplier<Loanable> {
+public class FileReader implements Streamable<Loanable> {
 
     /**
      * A list of items read from the file reader.
@@ -29,7 +34,7 @@ class FileReader implements Supplier<Loanable> {
      *
      * @param file initialized with path to json file.
      */
-    FileReader(java.io.FileReader file) {
+    public FileReader(java.io.FileReader file) {
         try {
             data.addAll((JSONArray)((JSONObject) new JSONParser().parse( file )).get("library_items")); // parse file as json get library items as a list and add each element to data
         } catch (IOException|ParseException e) {
@@ -44,9 +49,8 @@ class FileReader implements Supplier<Loanable> {
      *
      * @return first Loanable item
      */
-    @Override
-    public Loanable get() {
-        return new Map().apply(data.pollFirst()); // create a loanable from the next data item and return it
+    public Stream<Loanable> stream() {
+        return data.stream().map(new Map()); // create a loanable from the next data item and return it
     }
 
     /**
@@ -76,13 +80,13 @@ class FileReader implements Supplier<Loanable> {
             }
             switch (o.get("item_type").toString().toLowerCase()) {
                 case "cd":
-                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString()); // return new LibraryItem.CD(...) from static factory
+                    return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString()); // return new LibraryItem.CD(...) from static factory
                 case "dvd":
-                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.DVD); // return new LibraryItem.DVD(...) from static factory
+                    return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.DVD); // return new LibraryItem.DVD(...) from static factory
                 case "magazine":
-                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.MAGAZINE); // return new LibraryItem.Magazine(...) from static factory
+                    return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.MAGAZINE); // return new LibraryItem.Magazine(...) from static factory
                 case "book":
-                    return LibraryItem.makeLibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.BOOK, o.get("item_author").toString()); // return new LibraryItem.Book(...) from static factory
+                    return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.BOOK, o.get("item_author").toString()); // return new LibraryItem.Book(...) from static factory
             }
             return null;
         }

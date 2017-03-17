@@ -1,6 +1,7 @@
 package edu.metrostate.ics372.tigersharks;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * Responsible for providing a way to checkin/out library items.
@@ -17,19 +18,12 @@ public interface Loanable {
      *
      * @return due date
      */
-    LocalDate checkout();
+    Optional<LocalDate> checkout();
 
     /**
      * Update Loanable state to checked in.
      *
      * @return success value
      */
-    Boolean checkin();
-
-    /**
-     * Getter itemId
-     *
-     * @return item identifier
-     */
-    String getItemId();
+    boolean checkin();
 }
