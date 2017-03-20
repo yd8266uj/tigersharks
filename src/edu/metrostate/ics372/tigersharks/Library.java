@@ -12,26 +12,31 @@ import java.util.stream.Collectors;
  * @version 1
  */
 public class Library implements Servicable<LibraryItem> {
+    private final Store store;
+
+    Library(Store store) {
+        this.store = store;
+    }
 
     @Override
     public void createAll(List<LibraryItem> loanables) {
-        loanables.stream().forEach(Store.getInstance());
+        loanables.stream().forEach(store);
     }
 
     @Override
     public void create(LibraryItem loanable) {
-        Store.getInstance().accept(loanable);
+        store.accept(loanable);
     }
 
     @Override
     public List<LibraryItem> readAll() {
-        return Store.getInstance().stream()
+        return store.stream()
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<LibraryItem> read(Predicate<LibraryItem> loanablePredicate) {
-        return Store.getInstance().stream()
+        return store.stream()
                 .filter(loanablePredicate)
                 .findFirst();
     }
