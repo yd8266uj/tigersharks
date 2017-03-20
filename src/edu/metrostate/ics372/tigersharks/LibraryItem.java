@@ -108,11 +108,11 @@ public class LibraryItem implements Loanable {
         if (dueDate.compareTo(LocalDate.MIN) == 0) {
             synchronized (dueDate) {
                 if (dueDate.compareTo(LocalDate.MIN) == 0) {
-                    return Optional.of(dueDate);
+                    return Optional.empty();
                 }
             }
         }
-        return Optional.empty();
+        return Optional.of(dueDate);
     }
 
     /**

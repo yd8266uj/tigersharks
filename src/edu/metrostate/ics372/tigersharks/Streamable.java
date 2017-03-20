@@ -10,6 +10,5 @@ import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface Streamable<T> {
-    @NotNull
     Stream<T> stream();
 }

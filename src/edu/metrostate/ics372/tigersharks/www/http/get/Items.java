@@ -11,8 +11,11 @@ import java.util.List;
  */
 public class Items extends Template {
 
-    public Items(List<LibraryItem> loanables) {
-        add("world","World!");
+    public Items(List<LibraryItem> libraryItemList) {
+        addCollection("items", libraryItemList, (item, items) -> {
+            items.add("type", item.getType());
+            items.add("name", item.getName());
+        });
     }
 
     @Override
