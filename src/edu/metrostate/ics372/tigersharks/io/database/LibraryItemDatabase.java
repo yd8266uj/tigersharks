@@ -141,7 +141,9 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
 
     public static void main(String[] args) {
         LibraryItemDatabase libraryItemDatabase = new LibraryItemDatabase();
-        libraryItemDatabase.update(new LibraryItem("The Similiaron","abc123", LibraryItem.Type.BOOK,"J.R,R Tolkien",1,null,0));
+        LibraryItem libraryItem = new LibraryItem("abc123", "The Similiaron", LibraryItem.Type.BOOK,"J.R,R Tolkien",1,null,0);
+        libraryItem.checkout();
+        libraryItemDatabase.update(libraryItem);
         List<LibraryItem> libraryItemList = libraryItemDatabase.selectAll();
         System.out.println(libraryItemList.size());
     }

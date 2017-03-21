@@ -1,8 +1,8 @@
 package edu.metrostate.ics372.tigersharks.www;
 
-import edu.metrostate.ics372.tigersharks.Library;
 import edu.metrostate.ics372.tigersharks.LibraryItem;
 import edu.metrostate.ics372.tigersharks.Servicable;
+import edu.metrostate.ics372.tigersharks.io.Streamable;
 import edu.metrostate.ics372.tigersharks.io.database.LibraryItemDatabase;
 import edu.metrostate.ics372.tigersharks.io.Store;
 import edu.metrostate.ics372.tigersharks.www.http.get.Item;
@@ -14,6 +14,7 @@ import javax.servlet.MultipartConfigElement;
 
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static spark.Spark.*;
 
@@ -29,22 +30,24 @@ public class WebService {
     private static final String ENDPOINT_ITEMS = "/items";
     private static final String ENDPOINT_UPLOAD = "/upload";
 
-    private final Servicable<LibraryItem> loanableService;
+    private final Streamable<LibraryItem> libraryItemStreamable;
+    private final Consumer<LibraryItem> libraryItemConsumer;
 
-    private WebService(Servicable<LibraryItem> loanableService) {
-        this.loanableService = loanableService;
+    private WebService(Streamable<LibraryItem> libraryItemStreamable, Consumer<LibraryItem> libraryItemConsumer) {
+        this.libraryItemStreamable = libraryItemStreamable;
+        this.libraryItemConsumer = libraryItemConsumer;
     }
 
     public void start() {
         get(ENDPOINT_ITEM, (req, res) -> {
             final String itemId = req.queryParams(QUERY_PARAM_ID);
-            Optional<LibraryItem> libraryItemOptional = loanableService.read(loanable -> loanable.getId().equals(itemId));
+            Optional<LibraryItem> libraryItemOptional = Servicable.read(libraryItemStreamable, libraryItem -> libraryItem.getId().equals(itemId));
             if(libraryItemOptional.isPresent()) {
                 return new Item(libraryItemOptional.get()).render();
             }
             return null;
         });
-        get(ENDPOINT_ITEMS, (req, res) -> new Items(loanableService.readAll()).render());
+        get(ENDPOINT_ITEMS, (req, res) -> new Items(Servicable.readAll(libraryItemStreamable)).render());
         get(ENDPOINT_UPLOAD, (req, res) -> new Upload());
         post(ENDPOINT_ITEM, (req,res) -> {
             req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
@@ -60,7 +63,8 @@ public class WebService {
     }
 
     public static void main(String[] args) {
-        new WebService(new Library(new Store(LibraryItemDatabase.getInstance()))).start();
+        Store<LibraryItem> libraryItemStore = new Store<>(LibraryItemDatabase.getInstance());
+        new WebService(libraryItemStore,libraryItemStore).start();
     }
 }
 

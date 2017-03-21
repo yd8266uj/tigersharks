@@ -45,20 +45,22 @@ public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
 
     @Override
     protected Function<JSONObject, LibraryItem> getMap() {
-        return o -> {
-            if(!o.containsKey("item_type")) { // is there an item type field?
+        return jsonObject -> {
+            if(!jsonObject.containsKey("item_type")) { // is there an item type field?
                 return null; // could not create Loanable
             }
-            switch (o.get("item_type").toString().toLowerCase()) {
-                case "cd":
-                    //return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString()); // return new LibraryItem.CD(...) from static factory
-                case "dvd":
-                    return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.DVD); // return new LibraryItem.DVD(...) from static factory
-                case "magazine":
-                    return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.MAGAZINE); // return new LibraryItem.Magazine(...) from static factory
-                case "book":
-                    //return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.BOOK, o.get("item_author").toString()); // return new LibraryItem.Book(...) from static factory
+            final String id = jsonObject.get("item_id").toString();
+            final String name = jsonObject.get("item_name").toString();
+            final LibraryItem.Type type = LibraryItem.Type.valueOf(jsonObject.get("item_type").toString());
+            final String metadata;
+            if(jsonObject.containsKey("item_artist")) {
+                metadata = jsonObject.get("item_artist").toString();
+            } else if(!jsonObject.containsKey("item_author")) {
+                metadata = jsonObject.get("item_author").toString();
+            } else {
+                metadata = null;
             }
-            return null;};
+            return new LibraryItem(id, name, type, metadata);
+        };
     }
 }

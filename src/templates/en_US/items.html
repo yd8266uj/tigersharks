@@ -8,8 +8,13 @@
 <ul>
     ~for item in items:
     <li>
+        <span> id: ~item.id~ </span>
         <span> name: ~item.name~ </span>
         <span> type: ~item.type~ </span>
+        <span> metadata: ~item.metadata~ </span>
+        <span> patron id: ~item.patronId~ </span>
+        <span> library id: ~item.libraryId~ </span>
+        <span> due date: ~item.dueDate~ </span>
     </li>
     :~
 </ul>

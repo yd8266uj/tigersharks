@@ -1,7 +1,6 @@
 package edu.metrostate.ics372.tigersharks.io;
 
 import edu.metrostate.ics372.tigersharks.LibraryItem;
-import edu.metrostate.ics372.tigersharks.io.Streamable;
 import edu.metrostate.ics372.tigersharks.io.database.Database;
 
 import java.util.function.Consumer;
@@ -10,19 +9,19 @@ import java.util.stream.Stream;
 /**
  * Created by sleig on 3/16/2017.
  */
-public class Store implements Consumer<LibraryItem>, Streamable<LibraryItem> {
-    private Database<LibraryItem> libraryItemDatabase;
+public class Store<T> implements Consumer<T>, Streamable<T> {
+    private Database<T> database;
 
-    public Store(Database<LibraryItem> libraryItemDatabase) {
-        this.libraryItemDatabase = libraryItemDatabase;
+    public Store(Database<T> database) {
+        this.database = database;
     }
 
     @Override
-    public void accept(LibraryItem libraryItem) {
-        libraryItemDatabase.update(libraryItem);
+    public void accept(T libraryItem) {
+        database.update(libraryItem);
     }
 
-    public Stream<LibraryItem> stream() {
-        return libraryItemDatabase.selectAll().stream();
+    public Stream<T> stream() {
+        return database.selectAll().stream();
     }
 }

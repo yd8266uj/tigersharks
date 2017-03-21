@@ -1,9 +1,11 @@
 package edu.metrostate.ics372.tigersharks;
 
 import edu.metrostate.ics372.tigersharks.io.Store;
+import edu.metrostate.ics372.tigersharks.io.Streamable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -13,20 +15,15 @@ import java.util.stream.Collectors;
  * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
  * @version 1
  */
-public class Library implements Servicable<LibraryItem> {
-    private final Store store;
+/*
+public interface Library<T> extends Servicable<T> {
 
-    public Library(Store store) {
-        this.store = store;
-    }
-
-    @Override
-    public void createAll(List<LibraryItem> loanables) {
+    static void createAll(Consumer<T> tConsumer, List<LibraryItem> loanables) {
         loanables.stream().forEach(store);
     }
 
     @Override
-    public void create(LibraryItem loanable) {
+    public void create(Consumer<T> tConsumer, LibraryItem loanable) {
         store.accept(loanable);
     }
 
@@ -57,9 +54,5 @@ public class Library implements Servicable<LibraryItem> {
     public void deleteAll(List<LibraryItem> loanables) {
         //loanables.stream().map(Removable::of).forEach(Store.getInstance());
     }
-
-    @Override
-    public void delete(LibraryItem loanable) {
-        //create(loanable);
-    }
 }
+*/
