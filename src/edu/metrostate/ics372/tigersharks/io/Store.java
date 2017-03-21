@@ -1,7 +1,8 @@
-package edu.metrostate.ics372.tigersharks.io.database;
+package edu.metrostate.ics372.tigersharks.io;
 
 import edu.metrostate.ics372.tigersharks.LibraryItem;
 import edu.metrostate.ics372.tigersharks.io.Streamable;
+import edu.metrostate.ics372.tigersharks.io.database.Database;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;

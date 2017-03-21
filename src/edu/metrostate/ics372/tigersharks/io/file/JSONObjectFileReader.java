@@ -17,7 +17,7 @@ import org.json.simple.parser.ParseException;
  * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
  * @version 1
  */
-public class JSONObjectFileReader extends edu.metrostate.ics372.tigersharks.io.file.FileReader<JSONObject, LibraryItem> {
+public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
     private static final String ROOT_ELEMENT = "library_items";
 
     /**

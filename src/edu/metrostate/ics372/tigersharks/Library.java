@@ -1,6 +1,6 @@
 package edu.metrostate.ics372.tigersharks;
 
-import edu.metrostate.ics372.tigersharks.io.database.Store;
+import edu.metrostate.ics372.tigersharks.io.Store;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public class Library implements Servicable<LibraryItem> {
 
     @Override
     public Optional<LibraryItem> read(Predicate<LibraryItem> loanablePredicate) {
-        return store.stream()
+        return readAll().stream()
                 .filter(loanablePredicate)
                 .findFirst();
     }

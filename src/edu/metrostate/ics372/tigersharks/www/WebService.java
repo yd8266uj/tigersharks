@@ -4,7 +4,7 @@ import edu.metrostate.ics372.tigersharks.Library;
 import edu.metrostate.ics372.tigersharks.LibraryItem;
 import edu.metrostate.ics372.tigersharks.Servicable;
 import edu.metrostate.ics372.tigersharks.io.database.LibraryItemDatabase;
-import edu.metrostate.ics372.tigersharks.io.database.Store;
+import edu.metrostate.ics372.tigersharks.io.Store;
 import edu.metrostate.ics372.tigersharks.www.http.get.Item;
 import edu.metrostate.ics372.tigersharks.www.http.get.Items;
 import edu.metrostate.ics372.tigersharks.www.http.get.Upload;
