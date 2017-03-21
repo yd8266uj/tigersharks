@@ -1,4 +1,4 @@
-package edu.metrostate.ics372.tigersharks;
+package edu.metrostate.ics372.tigersharks.io.database;
 
 import java.util.List;
 

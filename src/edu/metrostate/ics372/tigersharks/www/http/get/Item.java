@@ -1,11 +1,8 @@
 package edu.metrostate.ics372.tigersharks.www.http.get;
 
 import edu.metrostate.ics372.tigersharks.LibraryItem;
-import edu.metrostate.ics372.tigersharks.Loanable;
 import org.watertemplate.Template;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 /**

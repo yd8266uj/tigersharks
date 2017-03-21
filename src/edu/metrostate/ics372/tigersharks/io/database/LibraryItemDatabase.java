@@ -1,4 +1,6 @@
-package edu.metrostate.ics372.tigersharks;
+package edu.metrostate.ics372.tigersharks.io.database;
+
+import edu.metrostate.ics372.tigersharks.LibraryItem;
 
 import java.sql.*;
 import java.time.LocalDate;

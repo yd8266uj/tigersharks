@@ -1,6 +1,10 @@
 package edu.metrostate.ics372.tigersharks.www;
 
-import edu.metrostate.ics372.tigersharks.*;
+import edu.metrostate.ics372.tigersharks.Library;
+import edu.metrostate.ics372.tigersharks.LibraryItem;
+import edu.metrostate.ics372.tigersharks.Servicable;
+import edu.metrostate.ics372.tigersharks.io.database.LibraryItemDatabase;
+import edu.metrostate.ics372.tigersharks.io.database.Store;
 import edu.metrostate.ics372.tigersharks.www.http.get.Item;
 import edu.metrostate.ics372.tigersharks.www.http.get.Items;
 import edu.metrostate.ics372.tigersharks.www.http.get.Upload;
@@ -21,6 +25,9 @@ public class WebService {
     private static final String QUERY_PARAM_NAME = "n";
     private static final String QUERY_PARAM_TYPE = "t";
     private static final String QUERY_PARAM_META = "m";
+    private static final String ENDPOINT_ITEM = "/item";
+    private static final String ENDPOINT_ITEMS = "/items";
+    private static final String ENDPOINT_UPLOAD = "/upload";
 
     private final Servicable<LibraryItem> loanableService;
 
@@ -29,7 +36,7 @@ public class WebService {
     }
 
     public void start() {
-        get("/item", (req, res) -> {
+        get(ENDPOINT_ITEM, (req, res) -> {
             final String itemId = req.queryParams(QUERY_PARAM_ID);
             Optional<LibraryItem> libraryItemOptional = loanableService.read(loanable -> loanable.getId().equals(itemId));
             if(libraryItemOptional.isPresent()) {
@@ -37,9 +44,9 @@ public class WebService {
             }
             return null;
         });
-        get("/items", (req, res) -> new Items(loanableService.readAll()).render());
-        get("/upload", (req, res) -> new Upload());
-        post("/item", (req,res) -> {
+        get(ENDPOINT_ITEMS, (req, res) -> new Items(loanableService.readAll()).render());
+        get(ENDPOINT_UPLOAD, (req, res) -> new Upload());
+        post(ENDPOINT_ITEM, (req,res) -> {
             req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
             try (InputStream is = req.raw().getPart("uploaded_file").getInputStream()) {
                 // Use the input stream to create a file

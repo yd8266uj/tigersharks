@@ -1,5 +1,7 @@
 package edu.metrostate.ics372.tigersharks;
 
+import edu.metrostate.ics372.tigersharks.io.database.Store;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
