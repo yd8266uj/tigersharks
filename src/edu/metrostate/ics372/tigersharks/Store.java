@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public class Store implements Consumer<LibraryItem>, Streamable<LibraryItem> {
     private Database<LibraryItem> libraryItemDatabase;
 
-    private Store(Database<LibraryItem> libraryItemDatabase) {
+    public Store(Database<LibraryItem> libraryItemDatabase) {
         this.libraryItemDatabase = libraryItemDatabase;
     }
 

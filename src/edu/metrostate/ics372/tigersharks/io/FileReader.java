@@ -1,7 +1,9 @@
 package edu.metrostate.ics372.tigersharks.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -25,7 +27,7 @@ public class FileReader implements Streamable<Loanable> {
     /**
      * A list of items read from the file reader.
      */
-    private final LinkedList<JSONObject> data = new LinkedList<>();
+    private final List<JSONObject> data = new ArrayList<>();
 
     /**
      * Read contents of a file into data List.
@@ -80,13 +82,13 @@ public class FileReader implements Streamable<Loanable> {
             }
             switch (o.get("item_type").toString().toLowerCase()) {
                 case "cd":
-                    return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString()); // return new LibraryItem.CD(...) from static factory
+                    //return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.CD, o.get("item_artist").toString()); // return new LibraryItem.CD(...) from static factory
                 case "dvd":
                     return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.DVD); // return new LibraryItem.DVD(...) from static factory
                 case "magazine":
                     return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.MAGAZINE); // return new LibraryItem.Magazine(...) from static factory
                 case "book":
-                    return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.BOOK, o.get("item_author").toString()); // return new LibraryItem.Book(...) from static factory
+                    //return new LibraryItem(o.get("item_name").toString(), o.get("item_id").toString(), LibraryItem.Type.BOOK, o.get("item_author").toString()); // return new LibraryItem.Book(...) from static factory
             }
             return null;
         }

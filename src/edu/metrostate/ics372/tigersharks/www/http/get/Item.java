@@ -15,7 +15,13 @@ public class Item extends Template {
 
     public Item(LibraryItem libraryItem) {
         addMappedObject("item", libraryItem, (item) -> {
-            item.add("meta", libraryItem.getMetadata());
+
+            Optional<String> metadata = libraryItem.getMetadata();
+            if (metadata.isPresent()) {
+                item.add("meta", metadata.get());
+            } else {
+                item.add("meta", "");
+            }
             item.add("id", libraryItem.getId());
             item.add("name", libraryItem.getName());
             item.add("type", libraryItem.getType());

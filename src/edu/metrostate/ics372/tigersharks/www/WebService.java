@@ -1,8 +1,6 @@
 package edu.metrostate.ics372.tigersharks.www;
 
-import edu.metrostate.ics372.tigersharks.Library;
-import edu.metrostate.ics372.tigersharks.LibraryItem;
-import edu.metrostate.ics372.tigersharks.Servicable;
+import edu.metrostate.ics372.tigersharks.*;
 import edu.metrostate.ics372.tigersharks.www.http.get.Item;
 import edu.metrostate.ics372.tigersharks.www.http.get.Items;
 import edu.metrostate.ics372.tigersharks.www.http.get.Upload;
@@ -55,7 +53,7 @@ public class WebService {
     }
 
     public static void main(String[] args) {
-        new WebService(new Library()).start();
+        new WebService(new Library(new Store(LibraryItemDatabase.getInstance()))).start();
     }
 }
 

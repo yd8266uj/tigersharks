@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Library implements Servicable<LibraryItem> {
     private final Store store;
 
-    Library(Store store) {
+    public Library(Store store) {
         this.store = store;
     }
 
