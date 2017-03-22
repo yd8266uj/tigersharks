@@ -22,26 +22,34 @@ public class Items extends Template {
             Optional<LocalDate> dueDateOptional = item.getDueDate();
             if (dueDateOptional.isPresent()) {
                 items.add("dueDate", dueDateOptional.get().format(DateTimeFormatter.BASIC_ISO_DATE));
+                items.add("hasDueDate", true);
             } else {
-                items.add("dueDate", "n/a");
+                items.add("dueDate", "");
+                items.add("hasDueDate", false);
             }
             Optional<String> metadataOptional = item.getMetadata();
             if (metadataOptional.isPresent()) {
                 items.add("metadata", metadataOptional.get());
+                items.add("hasMetadata", true);
             } else {
-                items.add("metadata", "n/a");
+                items.add("metadata", "");
+                items.add("hasMetadata", false);
             }
             Optional<Integer> libraryIdOptional = item.getLibraryId();
             if (libraryIdOptional.isPresent()) {
                 items.add("libraryId", String.valueOf(libraryIdOptional.get()));
+                items.add("hasLibraryId", true);
             } else {
-                items.add("libraryId", "n/a");
+                items.add("libraryId", "");
+                items.add("hasLibraryId", false);
             }
-            Optional<Integer> patronIdOptional = item.getPatronId();
+            Optional<String> patronIdOptional = item.getPatronId();
             if (patronIdOptional.isPresent()) {
-                items.add("patronId", String.valueOf(patronIdOptional.get()));
+                items.add("patronId", patronIdOptional.get());
+                items.add("hasPatronId", true);
             } else {
-                items.add("patronId", "n/a");
+                items.add("patronId", "");
+                items.add("hasPatronId", false);
             }
         });
     }

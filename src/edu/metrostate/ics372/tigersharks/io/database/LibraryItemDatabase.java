@@ -53,7 +53,7 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
                 if(resultSet.getString("dueDate") == null) {
                     dueDate = null;
                 } else {
-                    dueDate = LocalDate.parse(resultSet.getString("dueDate"));
+                    dueDate = LocalDate.parse(resultSet.getString("dueDate"),DateTimeFormatter.BASIC_ISO_DATE);
                 }
                 LibraryItem libraryItem = new LibraryItem(
                         resultSet.getString("id"),
@@ -62,7 +62,7 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
                         resultSet.getString("metadata"),
                         resultSet.getInt("libraryId"),
                         dueDate,
-                        resultSet.getInt("patronId"));
+                        resultSet.getString("patronId"));
                 libraryItemList.add(libraryItem);
             }
         } catch (SQLException e) {
@@ -79,7 +79,7 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
         final Optional<String> metadataOptional = libraryItem.getMetadata();
         final Optional<Integer> libraryIdOptional = libraryItem.getLibraryId();
         final Optional<LocalDate> dueDateOptional = libraryItem.getDueDate();
-        final Optional<Integer> patronIdOptional = libraryItem.getPatronId();
+        final Optional<String> patronIdOptional = libraryItem.getPatronId();
 
         final String sql = "INSERT OR REPLACE INTO " + tableName + "(" + columnList + ") VALUES (?,?,?,?,?,?,?);";
 
@@ -103,7 +103,7 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
                 preparedStatement.setString(6, dueDateOptional.get().format(DateTimeFormatter.BASIC_ISO_DATE));
             }
             if (patronIdOptional.isPresent()) {
-                preparedStatement.setInt(7, patronIdOptional.get());
+                preparedStatement.setString(7, patronIdOptional.get());
             } else {
                 preparedStatement.setNull(7, Types.INTEGER);
             }
@@ -141,8 +141,27 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
 
     public static void main(String[] args) {
         LibraryItemDatabase libraryItemDatabase = new LibraryItemDatabase();
-        LibraryItem libraryItem = new LibraryItem("abc123", "The Similiaron", LibraryItem.Type.BOOK,"J.R,R Tolkien",1,null,0);
-        libraryItem.checkout();
+        LibraryItem libraryItem = new LibraryItem("abc123", "The Similiaron", LibraryItem.Type.BOOK,"J.R,R Tolkien",1,null,"");
+        Optional<LocalDate> dueDate = libraryItem.getDueDate();
+        if (dueDate.isPresent()) {
+            System.out.println(dueDate.get());
+        } else {
+            System.out.println("null");
+        }
+        libraryItem.checkout("test patron");
+        dueDate = libraryItem.getDueDate();
+        if (dueDate.isPresent()) {
+            System.out.println(dueDate.get());
+        } else {
+            System.out.println("null");
+        }
+        libraryItem.checkin();
+        dueDate = libraryItem.getDueDate();
+        if (dueDate.isPresent()) {
+            System.out.println(dueDate.get());
+        } else {
+            System.out.println("null");
+        }
         libraryItemDatabase.update(libraryItem);
         List<LibraryItem> libraryItemList = libraryItemDatabase.selectAll();
         System.out.println(libraryItemList.size());

@@ -5,6 +5,8 @@ import edu.metrostate.ics372.tigersharks.Servicable;
 import edu.metrostate.ics372.tigersharks.io.Streamable;
 import edu.metrostate.ics372.tigersharks.io.database.LibraryItemDatabase;
 import edu.metrostate.ics372.tigersharks.io.Store;
+import edu.metrostate.ics372.tigersharks.io.file.JSONObjectFileReader;
+import edu.metrostate.ics372.tigersharks.io.file.XMLElementFileReader;
 import edu.metrostate.ics372.tigersharks.www.http.get.Item;
 import edu.metrostate.ics372.tigersharks.www.http.get.Items;
 import edu.metrostate.ics372.tigersharks.www.http.get.Upload;
@@ -15,6 +17,7 @@ import javax.servlet.MultipartConfigElement;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static spark.Spark.*;
 
@@ -22,13 +25,10 @@ import static spark.Spark.*;
  * Created by sleig on 3/15/2017.
  */
 public class WebService {
-    private static final String QUERY_PARAM_ID = "i";
-    private static final String QUERY_PARAM_NAME = "n";
-    private static final String QUERY_PARAM_TYPE = "t";
-    private static final String QUERY_PARAM_META = "m";
-    private static final String ENDPOINT_ITEM = "/item";
+    private static final String ENDPOINT_ITEM = "/library/:libraryId/item/:itemId";
     private static final String ENDPOINT_ITEMS = "/items";
-    private static final String ENDPOINT_UPLOAD = "/upload";
+    private static final String ENDPOINT_ITEMS_LIBRARY = "/library/:libraryId/items";
+    private static final String ENDPOINT_UPLOAD = "/library/:libraryId//upload";
 
     private final Streamable<LibraryItem> libraryItemStreamable;
     private final Consumer<LibraryItem> libraryItemConsumer;
@@ -39,27 +39,76 @@ public class WebService {
     }
 
     public void start() {
-        get(ENDPOINT_ITEM, (req, res) -> {
-            final String itemId = req.queryParams(QUERY_PARAM_ID);
-            Optional<LibraryItem> libraryItemOptional = Servicable.read(libraryItemStreamable, libraryItem -> libraryItem.getId().equals(itemId));
+
+        get(ENDPOINT_ITEM, (request, response) -> {
+            final String itemId = request.params(":itemId");
+            final String libraryId = request.params(":libraryId");
+            Optional<LibraryItem> libraryItemOptional = Servicable.read(libraryItemStreamable, libraryItem ->
+                    libraryItem.getId().equals(itemId) && LibraryItem.isInLibrary(Integer.valueOf(libraryId)).test(libraryItem));
             if(libraryItemOptional.isPresent()) {
                 return new Item(libraryItemOptional.get()).render();
             }
             return null;
         });
-        get(ENDPOINT_ITEMS, (req, res) -> new Items(Servicable.readAll(libraryItemStreamable)).render());
-        get(ENDPOINT_UPLOAD, (req, res) -> new Upload());
-        post(ENDPOINT_ITEM, (req,res) -> {
-            req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
-            try (InputStream is = req.raw().getPart("uploaded_file").getInputStream()) {
-                // Use the input stream to create a file
+
+        post(ENDPOINT_ITEM, (request, response) -> {
+            final String itemId = request.params(":itemId");
+            final String libraryId = request.params(":libraryId");
+            final String buttonValue = request.queryParams("button");
+            final String patronId;
+            if (buttonValue.equals("out")) {
+                patronId = request.queryParams("telephone");
+            } else {
+                patronId = "";
             }
+            Optional<LibraryItem> libraryItemOptional = Servicable.read(libraryItemStreamable, libraryItem ->
+                    libraryItem.getId().equals(itemId) && LibraryItem.isInLibrary(Integer.valueOf(libraryId)).test(libraryItem));
+            response.redirect(request.uri());
+            if (libraryItemOptional.isPresent()) {
+                LibraryItem libraryItem = libraryItemOptional.get();
+                if (buttonValue.equals("out")) {
+                    if (!libraryItem.getDueDate().isPresent()) {
+                        libraryItem.checkout(patronId);
+                        libraryItemConsumer.accept(libraryItem);
+                        return "<a href=\"" + libraryId + "\">" + libraryItem.getName() + "</a> was checked out from library " + libraryId + " by " + patronId;
+                    }
+                } else if (buttonValue.equals("in")) {
+                    libraryItem.checkin();
+                    libraryItemConsumer.accept(libraryItem);
+                }
+            }
+            return null;
+        });
+
+        get(ENDPOINT_ITEMS, (request, response) -> new Items(Servicable.readAll(libraryItemStreamable).stream()
+                //.filter(LibraryItem.isInLibrary(1))
+                //.sorted(LibraryItem.sortByType.reversed())
+                .sorted(LibraryItem.sortByName)
+                .collect(Collectors.toList())
+        ).render());
+
+        get(ENDPOINT_UPLOAD, (request, response) -> new Upload().render());
+
+        post(ENDPOINT_UPLOAD, (request, response) -> {
+            final String libraryId = request.params(":libraryId");
+            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            try (InputStream inputStream = request.raw().getPart("file").getInputStream()) {
+                final String fileName = request.raw()
+                        .getPart("file")
+                        .getSubmittedFileName();
+                if(fileName.endsWith(".xml")) {
+                    new XMLElementFileReader(inputStream, Integer.valueOf(libraryId))
+                            .stream()
+                            .forEach(libraryItemConsumer);
+                } else if(fileName.endsWith(".json")) {
+                    new JSONObjectFileReader(inputStream, Integer.valueOf(libraryId))
+                            .stream()
+                            .forEach(libraryItemConsumer);
+                }
+            }
+            response.redirect(ENDPOINT_ITEMS);
             return "File uploaded";
         });
-    }
-
-    public void stop() {
-        Spark.stop();
     }
 
     public static void main(String[] args) {

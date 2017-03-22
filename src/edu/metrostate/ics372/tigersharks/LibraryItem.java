@@ -1,11 +1,14 @@
 package edu.metrostate.ics372.tigersharks;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.org.apache.xalan.internal.xsltc.util.IntegerArray;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Responsible for handling Library items and associated data.
@@ -19,6 +22,20 @@ public class LibraryItem implements Loanable {
      *
      */
     private static final Function<Type, Long> getLoanPeriod = type -> type.compareTo(Type.BOOK) == 0 ? 3L : 1L;
+
+    public static final Comparator<LibraryItem> sortByName = (item1, item2) -> item1.getName().compareTo(item2.getName());
+
+    public static final Comparator<LibraryItem> sortByType = (item1, item2) -> item1.getType().compareTo(item2.getType());
+
+    public static final Predicate<LibraryItem> isCheckedIn = item -> item.getDueDate().isPresent();
+
+    public static Predicate<LibraryItem> isInLibrary(int libraryId) {
+        return libraryItem -> {
+            Optional<Integer> libraryIdOptional = libraryItem.getLibraryId();
+            return libraryIdOptional.isPresent() && libraryIdOptional.get() == libraryId;
+        };
+    }
+
 
     /**
      * Item types
@@ -53,12 +70,12 @@ public class LibraryItem implements Loanable {
     /**
      *
      */
-    private final LocalDate dueDate;
+    private LocalDate dueDate;
 
     /**
      *
      */
-    private final Integer patronId;
+    private String patronId;
 
     /**
      * Constructor
@@ -68,7 +85,7 @@ public class LibraryItem implements Loanable {
      * @param name item name
      * @param itemId item identifier
      */
-    public LibraryItem(@NotNull String itemId, @NotNull String name, @NotNull Type type, String metadata, Integer libraryId, LocalDate dueDate, Integer patronId) {
+    public LibraryItem(@NotNull String itemId, @NotNull String name, @NotNull Type type, String metadata, @NotNull Integer libraryId, LocalDate dueDate, String patronId) {
         this.name = name;
         this.id = itemId;
         this.type = type;
@@ -81,17 +98,6 @@ public class LibraryItem implements Loanable {
         }
         this.patronId = patronId;
 
-    }
-
-    /**
-     *
-     * @param itemId
-     * @param name
-     * @param type
-     * @param metadata
-     */
-    public LibraryItem(@NotNull String itemId, @NotNull String name, @NotNull Type type, String metadata) {
-        this(itemId, name, type, null, null, null, null);
     }
 
     /**
@@ -124,15 +130,15 @@ public class LibraryItem implements Loanable {
      * @return
      */
     public Optional<String> getMetadata() {
-        return Optional.of(metadata);
+        return Optional.ofNullable(metadata);
     }
 
     /**
      *
      * @return
      */
-    public Optional<Integer> getPatronId() {
-        return Optional.of(patronId);
+    public Optional<String> getPatronId() {
+        return Optional.ofNullable(patronId);
     }
 
     /**
@@ -140,7 +146,7 @@ public class LibraryItem implements Loanable {
      * @return
      */
     public Optional<Integer> getLibraryId() {
-        return Optional.of(libraryId);
+        return Optional.ofNullable(libraryId);
     }
 
     /**
@@ -163,11 +169,12 @@ public class LibraryItem implements Loanable {
      *
      * @return due date
      */
-    public Optional<LocalDate> checkout() {
+    public Optional<LocalDate> checkout(String patronId) {
         if (dueDate.compareTo(LocalDate.MIN) == 0) {
             synchronized (dueDate) {
                 if (dueDate.compareTo(LocalDate.MIN) == 0) {
-                    dueDate.adjustInto(LocalDate.now().plus(getLoanPeriod.apply(type), ChronoUnit.WEEKS));
+                    dueDate = LocalDate.now().plus(getLoanPeriod.apply(type), ChronoUnit.WEEKS); //this should be adjust
+                    this.patronId = patronId;
                     return Optional.of(dueDate);
                 }
             }
@@ -184,7 +191,8 @@ public class LibraryItem implements Loanable {
         if (dueDate.compareTo(LocalDate.MIN) != 0) {
             synchronized (dueDate) {
                 if (dueDate.compareTo(LocalDate.MIN) != 0) {
-                    dueDate.adjustInto(LocalDate.MIN);
+                    dueDate = LocalDate.MIN;
+                    this.patronId = null;
                     return true;
                 }
             }

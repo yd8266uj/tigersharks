@@ -3,6 +3,8 @@ package edu.metrostate.ics372.tigersharks.www.http.get;
 import edu.metrostate.ics372.tigersharks.LibraryItem;
 import org.watertemplate.Template;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 /**
@@ -12,16 +14,41 @@ public class Item extends Template {
 
     public Item(LibraryItem libraryItem) {
         addMappedObject("item", libraryItem, (item) -> {
-
-            Optional<String> metadata = libraryItem.getMetadata();
-            if (metadata.isPresent()) {
-                item.add("meta", metadata.get());
-            } else {
-                item.add("meta", "");
-            }
-            item.add("id", libraryItem.getId());
-            item.add("name", libraryItem.getName());
             item.add("type", libraryItem.getType());
+            item.add("name", libraryItem.getName());
+            item.add("id", libraryItem.getId());
+            Optional<LocalDate> dueDateOptional = libraryItem.getDueDate();
+            if (dueDateOptional.isPresent()) {
+                item.add("dueDate", dueDateOptional.get().format(DateTimeFormatter.BASIC_ISO_DATE));
+                item.add("hasDueDate", true);
+            } else {
+                item.add("dueDate", "");
+                item.add("hasDueDate", false);
+            }
+            Optional<String> metadataOptional = libraryItem.getMetadata();
+            if (metadataOptional.isPresent()) {
+                item.add("metadata", metadataOptional.get());
+                item.add("hasMetadata", true);
+            } else {
+                item.add("metadata", "");
+                item.add("hasMetadata", false);
+            }
+            Optional<Integer> libraryIdOptional = libraryItem.getLibraryId();
+            if (libraryIdOptional.isPresent()) {
+                item.add("libraryId", String.valueOf(libraryIdOptional.get()));
+                item.add("hasLibraryId", true);
+            } else {
+                item.add("libraryId", "");
+                item.add("hasLibraryId", false);
+            }
+            Optional<String> patronIdOptional = libraryItem.getPatronId();
+            if (patronIdOptional.isPresent()) {
+                item.add("patronId", patronIdOptional.get());
+                item.add("hasPatronId", true);
+            } else {
+                item.add("patronId", "");
+                item.add("hasPatronId", false);
+            }
         });
     }
 

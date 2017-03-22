@@ -8,13 +8,26 @@
 <ul>
     ~for item in items:
     <li>
-        <span> id: ~item.id~ </span>
-        <span> name: ~item.name~ </span>
-        <span> type: ~item.type~ </span>
-        <span> metadata: ~item.metadata~ </span>
-        <span> patron id: ~item.patronId~ </span>
-        <span> library id: ~item.libraryId~ </span>
-        <span> due date: ~item.dueDate~ </span>
+        <a href="library/~item.libraryId~/item/~item.id~">~item.name~</a>
+        <span>type: ~item.type~</span>
+        ~if item.hasMetadata:
+        <span>metadata: ~item.metadata~</span>
+        :~
+        ~if item.hasPatronId:
+        <span>patron id: ~item.patronId~</span>
+        :~
+        ~if item.hasLibraryId:
+        <span>library id: ~item.libraryId~</span>
+        :~
+        ~if item.hasDueDate:
+        <span>due date: ~item.dueDate~</span>
+        :else:
+        <span>checked in</span>
+        :~
+    </li>
+    :else:
+    <li>
+        no items in database
     </li>
     :~
 </ul>

@@ -8,6 +8,21 @@
 name ~item.name~
 id ~item.id~
 type ~item.type~
-meta ~item.meta~
+~if item.hasMetadata:
+meta ~item.metadata~
+:~
+~if item.hasDueDate:
+<span>due date: ~item.dueDate~</span>
+<form method='post'>
+    <button name="button" value="in">Check in</button>
+</form>
+:else:
+    ~if item.hasLibraryId:
+    <form method='post'>
+        <input type="text" name="telephone" placeholder="telephone #" pattern="[0-9]{10}">
+        <button name="button" value="out">Check out</button>
+    </form>
+    :~
+:~
 </body>
 </html>

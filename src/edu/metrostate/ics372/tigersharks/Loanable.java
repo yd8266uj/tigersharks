@@ -18,7 +18,7 @@ public interface Loanable {
      *
      * @return due date
      */
-    Optional<LocalDate> checkout();
+    Optional<LocalDate> checkout(String patronId);
 
     /**
      * Update Loanable state to checked in.

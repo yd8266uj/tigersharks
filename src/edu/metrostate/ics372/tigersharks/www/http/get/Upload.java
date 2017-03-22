@@ -8,7 +8,6 @@ import org.watertemplate.Template;
 public class Upload extends Template {
 
     public Upload() {
-        add("world","World!");
     }
 
     @Override

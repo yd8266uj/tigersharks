@@ -20,6 +20,8 @@ import org.json.simple.parser.ParseException;
 public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
     private static final String ROOT_ELEMENT = "library_items";
 
+    private final int libraryId;
+
     /**
      * Read contents of a file into data List.
      *
@@ -27,8 +29,9 @@ public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
      *
      * @param inputStream initialized with path to json file.
      */
-    public JSONObjectFileReader(InputStream inputStream) {
+    public JSONObjectFileReader(InputStream inputStream, int libraryId) {
         super(inputStream);
+        this.libraryId = libraryId;
     }
 
     @Override
@@ -51,16 +54,18 @@ public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
             }
             final String id = jsonObject.get("item_id").toString();
             final String name = jsonObject.get("item_name").toString();
-            final LibraryItem.Type type = LibraryItem.Type.valueOf(jsonObject.get("item_type").toString());
+            final LibraryItem.Type type = LibraryItem.Type.valueOf(jsonObject.get("item_type").toString().toUpperCase());
             final String metadata;
-            if(jsonObject.containsKey("item_artist")) {
+            if(type.compareTo(LibraryItem.Type.CD) == 0 && jsonObject.containsKey("item_artist")) {
                 metadata = jsonObject.get("item_artist").toString();
-            } else if(!jsonObject.containsKey("item_author")) {
+            } else if(type.compareTo(LibraryItem.Type.BOOK) == 0 && jsonObject.containsKey("item_author")) {
                 metadata = jsonObject.get("item_author").toString();
+            } else if(type.compareTo(LibraryItem.Type.MAGAZINE) == 0 && jsonObject.containsKey("item_volume")) {
+                metadata = jsonObject.get("item_volume").toString();
             } else {
                 metadata = null;
             }
-            return new LibraryItem(id, name, type, metadata);
+            return new LibraryItem(id, name, type, metadata, libraryId, null, null);
         };
     }
 }
