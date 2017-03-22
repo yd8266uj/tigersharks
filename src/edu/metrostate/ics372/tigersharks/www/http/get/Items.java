@@ -14,14 +14,17 @@ import java.util.Optional;
  */
 public class Items extends Template {
 
+    private final String title = "items";
+
     public Items(List<LibraryItem> libraryItemList) {
+        add("libraryId",String.valueOf(libraryItemList.get(0).getLibraryId().get()));
         addCollection("items", libraryItemList, (item, items) -> {
             items.add("type", item.getType());
             items.add("name", item.getName());
             items.add("id", item.getId());
             Optional<LocalDate> dueDateOptional = item.getDueDate();
             if (dueDateOptional.isPresent()) {
-                items.add("dueDate", dueDateOptional.get().format(DateTimeFormatter.BASIC_ISO_DATE));
+                items.add("dueDate", dueDateOptional.get().format(DateTimeFormatter.ISO_DATE));
                 items.add("hasDueDate", true);
             } else {
                 items.add("dueDate", "");
@@ -52,6 +55,11 @@ public class Items extends Template {
                 items.add("hasPatronId", false);
             }
         });
+    }
+
+    @Override
+    protected Template getMasterTemplate() {
+        return new MasterTemplate(title);
     }
 
     @Override

@@ -7,6 +7,7 @@ import edu.metrostate.ics372.tigersharks.io.database.LibraryItemDatabase;
 import edu.metrostate.ics372.tigersharks.io.Store;
 import edu.metrostate.ics372.tigersharks.io.file.JSONObjectFileReader;
 import edu.metrostate.ics372.tigersharks.io.file.XMLElementFileReader;
+import edu.metrostate.ics372.tigersharks.www.http.get.Home;
 import edu.metrostate.ics372.tigersharks.www.http.get.Item;
 import edu.metrostate.ics372.tigersharks.www.http.get.Items;
 import edu.metrostate.ics372.tigersharks.www.http.get.Upload;
@@ -25,9 +26,10 @@ import static spark.Spark.*;
  * Created by sleig on 3/15/2017.
  */
 public class WebService {
+
+    private static final String ENDPOINT_HOME = "/home";
     private static final String ENDPOINT_ITEM = "/library/:libraryId/item/:itemId";
-    private static final String ENDPOINT_ITEMS = "/items";
-    private static final String ENDPOINT_ITEMS_LIBRARY = "/library/:libraryId/items";
+    private static final String ENDPOINT_ITEMS = "/library/:libraryId";
     private static final String ENDPOINT_UPLOAD = "/library/:libraryId//upload";
 
     private final Streamable<LibraryItem> libraryItemStreamable;
@@ -39,6 +41,8 @@ public class WebService {
     }
 
     public void start() {
+
+        get(ENDPOINT_HOME, (request, response) -> new Home().render());
 
         get(ENDPOINT_ITEM, (request, response) -> {
             final String itemId = request.params(":itemId");
@@ -81,13 +85,16 @@ public class WebService {
         });
 
         get(ENDPOINT_ITEMS, (request, response) -> new Items(Servicable.readAll(libraryItemStreamable).stream()
-                //.filter(LibraryItem.isInLibrary(1))
+                .filter(LibraryItem.isInLibrary(Integer.valueOf(request.params(":libraryId"))))
                 //.sorted(LibraryItem.sortByType.reversed())
                 .sorted(LibraryItem.sortByName)
                 .collect(Collectors.toList())
         ).render());
 
-        get(ENDPOINT_UPLOAD, (request, response) -> new Upload().render());
+        get(ENDPOINT_UPLOAD, (request, response) -> {
+            final String libraryId = request.params(":libraryId");
+            return new Upload(libraryId).render();
+        });
 
         post(ENDPOINT_UPLOAD, (request, response) -> {
             final String libraryId = request.params(":libraryId");
@@ -106,7 +113,7 @@ public class WebService {
                             .forEach(libraryItemConsumer);
                 }
             }
-            response.redirect(ENDPOINT_ITEMS);
+            response.redirect(request.uri());
             return "File uploaded";
         });
     }
