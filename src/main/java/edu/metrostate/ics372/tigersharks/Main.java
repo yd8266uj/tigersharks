@@ -5,7 +5,10 @@ import edu.metrostate.ics372.tigersharks.io.database.LibraryItemDatabase;
 import edu.metrostate.ics372.tigersharks.www.WebService;
 
 /**
- * Created by sleig on 3/22/2017.
+ * main driver function
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public class Main {
     public static void main(String[] args) {

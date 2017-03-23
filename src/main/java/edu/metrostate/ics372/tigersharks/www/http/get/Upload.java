@@ -3,7 +3,10 @@ package edu.metrostate.ics372.tigersharks.www.http.get;
 import org.watertemplate.Template;
 
 /**
- * Created by sleig on 3/16/2017.
+ * renders an upload form page
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public class Upload extends Template {
 

@@ -7,7 +7,10 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * Created by sleig on 3/16/2017.
+ * combines the power of a consumer and a supplier all in one class
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public class Store<T> implements Consumer<T>, Streamable<T> {
     private Database<T> database;

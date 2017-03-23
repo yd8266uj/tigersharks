@@ -1,7 +1,10 @@
 package edu.metrostate.ics372.tigersharks.support;
 
 /**
- * Created by sleig on 3/21/2017.
+ * this really isnt implemented. I wanted to have a custom exception class for logging and stuff but logging isnt really a thing either
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public class TigersharkException extends Exception {
     public TigersharkException() {

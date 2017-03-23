@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by sleig on 3/19/2017.
+ * provide direct access to the data base with basic operations
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public class LibraryItemDatabase implements Database<LibraryItem> {
     private Connection connection;

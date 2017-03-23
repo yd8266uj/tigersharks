@@ -3,7 +3,10 @@ package edu.metrostate.ics372.tigersharks.www.http.get;
 import org.watertemplate.Template;
 
 /**
- * Created by sleig on 3/22/2017.
+ * renders a homepage
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public class Home extends Template {
     private final String title = "Home";

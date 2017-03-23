@@ -3,7 +3,10 @@ package edu.metrostate.ics372.tigersharks.io.database;
 import java.util.List;
 
 /**
- * Created by sleig on 3/19/2017.
+ * this object can access a list of items and store items in a list? or maybe it just makes them up
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public interface Database<T> {
     List<T> selectAll();

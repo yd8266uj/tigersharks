@@ -1,7 +1,10 @@
 package edu.metrostate.ics372.tigersharks.www.http.get;
 
 /**
- * Created by sleig on 3/22/2017.
+ * renders the headers and footers for the other pages
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 import org.watertemplate.Template;
 import org.watertemplate.TemplateMap;

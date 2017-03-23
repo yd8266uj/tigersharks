@@ -16,16 +16,32 @@ import java.util.function.Predicate;
 public class LibraryItem implements Loanable {
 
     /**
-     *
+     * get loan period in weeks based on type of item
      */
     private static final Function<Type, Long> getLoanPeriod = type -> type.compareTo(Type.BOOK) == 0 ? 3L : 1L;
 
+    /**
+     * determine relative order by name
+     */
     public static final Comparator<LibraryItem> sortByName = (item1, item2) -> item1.getName().compareTo(item2.getName());
 
+
+    /**
+     * determine relative order by type
+     */
     public static final Comparator<LibraryItem> sortByType = (item1, item2) -> item1.getType().compareTo(item2.getType());
 
+    /**
+     * determine if the item is currently checked in
+     */
     public static final Predicate<LibraryItem> isCheckedIn = item -> item.getDueDate().isPresent();
 
+    /**
+     * can the item be found in this library?
+     *
+     * @param libraryId current library id
+     * @return is it here?
+     */
     public static Predicate<LibraryItem> isInLibrary(int libraryId) {
         return libraryItem -> {
             Optional<Integer> libraryIdOptional = libraryItem.getLibraryId();
@@ -50,27 +66,27 @@ public class LibraryItem implements Loanable {
     private final String id;
 
     /**
-     *
+     * the type of this item
      */
     private final Type type;
 
     /**
-     *
+     * the library this item is in
      */
     private final Integer libraryId;
 
     /**
-     *
+     * any extra info about the item
      */
     private final String metadata;
 
     /**
-     *
+     * when this item is due
      */
     private LocalDate dueDate;
 
     /**
-     *
+     * who has this item checked out
      */
     private String patronId;
 
@@ -107,48 +123,54 @@ public class LibraryItem implements Loanable {
     }
 
     /**
+     * getter for name
      *
-     * @return
+     * @return name
      */
     public String getName() {
         return name;
     }
 
     /**
+     * getter for type as string value
      *
-     * @return
+     * @return type string
      */
     public String getType() {
         return type.name();
     }
 
     /**
+     * getter for optional metadata
      *
-     * @return
+     * @return metadata?
      */
     public Optional<String> getMetadata() {
         return Optional.ofNullable(metadata);
     }
 
     /**
+     * getter for optional patron id
      *
-     * @return
+     * @return patron id?
      */
     public Optional<String> getPatronId() {
         return Optional.ofNullable(patronId);
     }
 
     /**
+     * getter for optional library id
      *
-     * @return
+     * @return library id?
      */
     public Optional<Integer> getLibraryId() {
         return Optional.ofNullable(libraryId);
     }
 
     /**
+     * getter for due date
      *
-     * @return
+     * @return when this item is due if at all
      */
     public Optional<LocalDate> getDueDate() {
         if (dueDate.compareTo(LocalDate.MIN) == 0) {
@@ -162,9 +184,9 @@ public class LibraryItem implements Loanable {
     }
 
     /**
-     * Try to check out Loanable
+     * Try to check out item
      *
-     * @return due date
+     * @return due date if there is one
      */
     public Optional<LocalDate> checkout(String patronId) {
         if (dueDate.compareTo(LocalDate.MIN) == 0) {
@@ -180,7 +202,7 @@ public class LibraryItem implements Loanable {
     }
 
     /**
-     * Update Loanable state to checked in.
+     * Update item state to checked in.
      *
      * @return success value
      */

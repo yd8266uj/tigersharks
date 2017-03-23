@@ -5,7 +5,10 @@ import edu.metrostate.ics372.tigersharks.support.TigersharkException;
 import java.util.stream.Stream;
 
 /**
- * Created by sleig on 3/16/2017.
+ * this object can be converted to a stream of objects
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 
 @FunctionalInterface

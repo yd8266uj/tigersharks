@@ -8,7 +8,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 /**
- * Created by sleig on 3/16/2017.
+ * renders an item page
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 public class Item extends Template {
 

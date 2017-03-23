@@ -12,7 +12,10 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Created by sleig on 3/21/2017.
+ * template for how to read and process files
+ *
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * @version 1
  */
 abstract class FileReader<T,R> implements Streamable<R> {
     protected final List<T> data;
