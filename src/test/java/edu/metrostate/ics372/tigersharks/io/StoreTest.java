@@ -52,10 +52,4 @@ public class StoreTest {
         assertTrue("some inputs missing",snapshot2.containsAll(input));
         assertEquals("incorrect length after update",snapshot2.size(),4);
     }
-
-    @Test
-    public void stream() throws Exception {
-
-    }
-
 }

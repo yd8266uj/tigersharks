@@ -35,9 +35,9 @@ public class XMLElementFileReaderTest {
     @Test
     public void getMap() throws Exception {
         fileReader.stream()
-                .map(LibraryItem::getLibraryId)
-                .map(Optional::get)
-                .forEach(i -> assertEquals(LIBRARY_ID,i.longValue()));
+            .map(LibraryItem::getLibraryId)
+            .map(Optional::get)
+            .forEach(i -> assertEquals(LIBRARY_ID,i.longValue()));
         assertEquals(2,fileReader.stream().count());
     }
 }
