@@ -8,11 +8,18 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Created by sleig on 3/21/2017.
+*FileReader 
+*
+* @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
+ * 
  */
 abstract class FileReader<T,R> implements Streamable<R> {
     protected final List<T> data;
 
+    /*
+    *
+    *Sets value for variable data
+    */
     FileReader(InputStream inputStream) {
         this.data = getData(inputStream);
     }
@@ -20,7 +27,11 @@ abstract class FileReader<T,R> implements Streamable<R> {
     protected abstract List<T> getData(InputStream inputStream);
 
     protected abstract Function<T,R> getMap();
-
+    
+    /*
+    *
+    *return map for data
+    */
     @Override
     final public Stream<R> stream() {
         return data.stream().map(getMap());
