@@ -1,8 +1,5 @@
 package edu.metrostate.ics372.tigersharks;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.org.apache.xalan.internal.xsltc.util.IntegerArray;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -85,7 +82,7 @@ public class LibraryItem implements Loanable {
      * @param name item name
      * @param itemId item identifier
      */
-    public LibraryItem(@NotNull String itemId, @NotNull String name, @NotNull Type type, String metadata, @NotNull Integer libraryId, LocalDate dueDate, String patronId) {
+    public LibraryItem(String itemId, String name, Type type, String metadata, Integer libraryId, LocalDate dueDate, String patronId) {
         this.name = name;
         this.id = itemId;
         this.type = type;

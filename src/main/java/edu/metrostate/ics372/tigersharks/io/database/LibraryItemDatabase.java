@@ -29,8 +29,13 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
     private LibraryItemDatabase() {
         final String url = "jdbc:" + databaseDriver + ":" + databaseDirectory + "//" + databaseName;
         try {
+            Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection(url);
         } catch (SQLException e) {
+            System.out.println("Could not connect to database");
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class not found");
             e.printStackTrace();
         }
     }

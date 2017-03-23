@@ -16,8 +16,8 @@ public class Items extends Template {
 
     private final String title = "items";
 
-    public Items(List<LibraryItem> libraryItemList) {
-        add("libraryId",String.valueOf(libraryItemList.get(0).getLibraryId().get()));
+    public Items(List<LibraryItem> libraryItemList, String libraryId) {
+        add("libraryId",libraryId);
         addCollection("items", libraryItemList, (item, items) -> {
             items.add("type", item.getType());
             items.add("name", item.getName());

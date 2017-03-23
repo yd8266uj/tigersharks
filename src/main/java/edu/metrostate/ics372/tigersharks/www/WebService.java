@@ -11,7 +11,6 @@ import edu.metrostate.ics372.tigersharks.www.http.get.Home;
 import edu.metrostate.ics372.tigersharks.www.http.get.Item;
 import edu.metrostate.ics372.tigersharks.www.http.get.Items;
 import edu.metrostate.ics372.tigersharks.www.http.get.Upload;
-import spark.Spark;
 
 import javax.servlet.MultipartConfigElement;
 
@@ -88,8 +87,8 @@ public class WebService {
                 .filter(LibraryItem.isInLibrary(Integer.valueOf(request.params(":libraryId"))))
                 //.sorted(LibraryItem.sortByType.reversed())
                 .sorted(LibraryItem.sortByName)
-                .collect(Collectors.toList())
-        ).render());
+                .collect(Collectors.toList()),
+                request.params(":libraryId")).render());
 
         get(ENDPOINT_UPLOAD, (request, response) -> {
             final String libraryId = request.params(":libraryId");
