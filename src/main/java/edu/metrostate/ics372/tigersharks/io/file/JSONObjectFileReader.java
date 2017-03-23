@@ -15,9 +15,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  * Responsible for generating a supply of Loanable items from a JSON file.
- *
  * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
- * @version 1
  */
 public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
 
@@ -48,11 +46,8 @@ public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
     }
 
     /**
-     *
-     * @param inputStream
-     * @return
-     * @throws TigersharkException
-     */
+    *  Create new ArrayList with objects returned from File
+    */
     @Override
     protected List<JSONObject> getData(InputStream inputStream) throws TigersharkException {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -73,9 +68,8 @@ public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
     }
 
     /**
-     *
-     * @return
-     */
+    *  Compare LibraryItem type and create new LibraryItem object based on type.
+    */
     @Override
     protected Function<JSONObject, Optional<LibraryItem>> getMap() {
         return jsonObject -> {

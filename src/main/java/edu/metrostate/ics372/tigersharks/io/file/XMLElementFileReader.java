@@ -16,7 +16,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Created by sleig on 3/21/2017.
+ * Responsible for generating a supply of Loanable items from an XML file
+ * @author tigersharks <a href="https://github.com/yd8266uj/tigersharks">github</a>
  */
 public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
 
@@ -43,12 +44,9 @@ public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
         super(inputStream);
         this.libraryId = libraryId;
     }
-
     /**
-     *
-     * @param inputStream
-     * @return
-     */
+    * Create a DocumentBuilder, and create document from XML file
+    */
     @Override
     protected List<Element> getData(InputStream inputStream) throws TigersharkException {
         List<Element> elementList = new ArrayList<>();
@@ -71,11 +69,10 @@ public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
         }
         return elementList;
     }
-
     /**
-     *
-     * @return
-     */
+    *  Examine attributes of the element, compare to cases and create
+    *  new LibraryItem object.
+    */
     @Override
     protected Function<Element, Optional<LibraryItem>> getMap() {
         return element -> {
