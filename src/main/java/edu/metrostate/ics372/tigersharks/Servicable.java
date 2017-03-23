@@ -1,6 +1,7 @@
 package edu.metrostate.ics372.tigersharks;
 
 import edu.metrostate.ics372.tigersharks.io.Streamable;
+import edu.metrostate.ics372.tigersharks.support.TigersharkException;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,11 +22,11 @@ public interface Servicable<T> {
         tConsumer.accept(t);
     }
 
-    static <T> List<T> readAll(Streamable<T> tStreamable) {
+    static <T> List<T> readAll(Streamable<T> tStreamable) throws TigersharkException {
         return tStreamable.stream().collect(Collectors.toList());
     }
 
-    static <T> Optional<T> read(Streamable<T> tStreamable, Predicate<T> tPredicate) {
+    static <T> Optional<T> read(Streamable<T> tStreamable, Predicate<T> tPredicate) throws TigersharkException {
         return readAll(tStreamable).stream()
                 .filter(tPredicate)
                 .findFirst();

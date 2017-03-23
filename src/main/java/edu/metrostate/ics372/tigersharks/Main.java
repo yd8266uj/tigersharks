@@ -1,5 +1,7 @@
 package edu.metrostate.ics372.tigersharks;
 
+import edu.metrostate.ics372.tigersharks.io.Store;
+import edu.metrostate.ics372.tigersharks.io.database.LibraryItemDatabase;
 import edu.metrostate.ics372.tigersharks.www.WebService;
 
 /**
@@ -7,6 +9,7 @@ import edu.metrostate.ics372.tigersharks.www.WebService;
  */
 public class Main {
     public static void main(String[] args) {
-        WebService.main(args);
+        Store<LibraryItem> libraryItemStore = new Store<>(LibraryItemDatabase.getInstance());
+        new WebService(libraryItemStore,libraryItemStore).start();
     }
 }

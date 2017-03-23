@@ -1,6 +1,7 @@
 package edu.metrostate.ics372.tigersharks.io.file;
 
 import edu.metrostate.ics372.tigersharks.LibraryItem;
+import edu.metrostate.ics372.tigersharks.support.TigersharkException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -18,6 +20,7 @@ import java.util.function.Function;
  */
 public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
 
+    /*  */
     private static final String ITEM_TAGNAME = "Item";
     private static final String TYPE_ATTRIBUTENAME = "type";
     private static final String ID_ATTRIBUTENAME = "id";
@@ -26,15 +29,28 @@ public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
     private static final String METADATA_TAGNAME_BOOK = "Author";
     private static final String METADATA_TAGNAME_MAGAZINE = "Volume";
 
+    /**
+     *
+     */
     private final int libraryId;
 
-    public XMLElementFileReader(InputStream inputStream, int libraryId) {
+    /**
+     *
+     * @param inputStream
+     * @param libraryId
+     */
+    public XMLElementFileReader(InputStream inputStream, int libraryId) throws TigersharkException {
         super(inputStream);
         this.libraryId = libraryId;
     }
 
+    /**
+     *
+     * @param inputStream
+     * @return
+     */
     @Override
-    protected List<Element> getData(InputStream inputStream) {
+    protected List<Element> getData(InputStream inputStream) throws TigersharkException {
         List<Element> elementList = new ArrayList<>();
         // use inputStream to get a list of Element and then return it
         try{
@@ -56,23 +72,74 @@ public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
         return elementList;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
-    protected Function<Element, LibraryItem> getMap() {
+    protected Function<Element, Optional<LibraryItem>> getMap() {
         return element -> {
-            final String id = element.getAttribute(ID_ATTRIBUTENAME);
-            final String name = element.getElementsByTagName(NAME_TAGNAME).item(0).getTextContent();
-            final LibraryItem.Type type = LibraryItem.Type.valueOf(element.getAttribute(TYPE_ATTRIBUTENAME).toUpperCase());
+            /*  */
+            if (!element.hasAttribute(ID_ATTRIBUTENAME) || !element.hasAttribute(TYPE_ATTRIBUTENAME)) {
+                return Optional.empty();
+            }
+
+            final String id = element.getAttribute(ID_ATTRIBUTENAME).trim();
+            if(id.equals("")) {
+                return Optional.empty();
+            }
+
+            NodeList nodeList = element.getElementsByTagName(NAME_TAGNAME);
+            if(nodeList == null || nodeList.item(0) == null) {
+                return Optional.empty();
+            }
+
+            final String name = nodeList.item(0).getTextContent().trim();
+            if(name.equals("")) {
+                return Optional.empty();
+            }
+
+            final LibraryItem.Type type;
+            try {
+                type = LibraryItem.Type.valueOf(element.getAttribute(TYPE_ATTRIBUTENAME).toUpperCase());
+            } catch (Exception e) {
+                return Optional.empty();
+            }
+
             final String metadata;
+            /*  */
             if (type.compareTo(LibraryItem.Type.CD) == 0) {
-                metadata = element.getElementsByTagName(METADATA_TAGNAME_CD).item(0).getTextContent();
+                nodeList = element.getElementsByTagName(METADATA_TAGNAME_CD);
+                if(nodeList == null || nodeList.item(0) == null) {
+                    return Optional.empty();
+                }
+                metadata = nodeList.item(0).getTextContent().trim();
+                if(metadata.equals("")) {
+                    return Optional.empty();
+                }
             } else if (type.compareTo(LibraryItem.Type.BOOK) == 0) {
-                metadata = element.getElementsByTagName(METADATA_TAGNAME_BOOK).item(0).getTextContent();
+                nodeList = element.getElementsByTagName(METADATA_TAGNAME_BOOK);
+                if(nodeList == null || nodeList.item(0) == null) {
+                    return Optional.empty();
+                }
+                metadata = nodeList.item(0).getTextContent().trim();
+                if(metadata.equals("")) {
+                    return Optional.empty();
+                }
             } else if (type.compareTo(LibraryItem.Type.MAGAZINE) == 0) {
-                metadata = element.getElementsByTagName(METADATA_TAGNAME_MAGAZINE).item(0).getTextContent();
+                nodeList = element.getElementsByTagName(METADATA_TAGNAME_MAGAZINE);
+                if(nodeList == null || nodeList.item(0) == null) {
+                    return Optional.empty();
+                }
+                metadata = nodeList.item(0).getTextContent().trim();
+                if(metadata.equals("")) {
+                    return Optional.empty();
+                }
             } else {
                 metadata = null;
             }
-            return new LibraryItem(id, name, type, metadata, libraryId, null, null);
+
+            return Optional.of(new LibraryItem(id, name, type, metadata, libraryId, null, null)); //
         };
     }
 }

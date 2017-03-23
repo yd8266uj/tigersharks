@@ -1,5 +1,7 @@
 package edu.metrostate.ics372.tigersharks.io;
 
+import edu.metrostate.ics372.tigersharks.support.TigersharkException;
+
 import java.util.stream.Stream;
 
 /**
@@ -8,5 +10,5 @@ import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface Streamable<T> {
-    Stream<T> stream();
+    Stream<T> stream() throws TigersharkException;
 }

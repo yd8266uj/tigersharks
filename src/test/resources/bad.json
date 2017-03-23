@@ -1,0 +1,47 @@
+{
+  "library_items":[
+    {
+      "item_name":"Yellow Submarine",
+      "item_type":"CD",
+      "item_id":"48934j",
+      "item_artist":"Beatles"
+    },
+    {
+      "item_name":"The Count of Monte Cristo",
+      "item_type":"Book",
+      "item_id":"1adf4",
+      "item_author":"Alexandre Dumas"
+    },
+    {
+      "item_name":"Cat Fancy v23",
+      "item_type":"Magazine",
+      "item_id":"1a545"
+    },
+    {
+      "item_name":"Toy Story",
+      "item_type":"DVD",
+      "item_id":"85545"
+    },
+    {
+      "item_name": "Yellow Submarine",
+      "item_type": "CCD",
+      "item_id": "48934j",
+      "item_artist": "Beatles"
+    },
+    {
+      "item_name": "The Count of Monte Cristo",
+      "item_type": "Book",
+      "item_id": "1adf4"
+    },
+    {
+      "item_name": "Cat Fancy v23",
+      "item_type": "Magazine",
+      "item_id": ""
+    },
+    {
+      "item_name": "Toy Story",
+      "item_type": "DVD",
+      "item_id": "85545"
+    }
+  ],
+}

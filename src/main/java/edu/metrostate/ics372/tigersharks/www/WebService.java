@@ -34,7 +34,7 @@ public class WebService {
     private final Streamable<LibraryItem> libraryItemStreamable;
     private final Consumer<LibraryItem> libraryItemConsumer;
 
-    private WebService(Streamable<LibraryItem> libraryItemStreamable, Consumer<LibraryItem> libraryItemConsumer) {
+    public WebService(Streamable<LibraryItem> libraryItemStreamable, Consumer<LibraryItem> libraryItemConsumer) {
         this.libraryItemStreamable = libraryItemStreamable;
         this.libraryItemConsumer = libraryItemConsumer;
     }
@@ -72,12 +72,12 @@ public class WebService {
                 if (buttonValue.equals("out")) {
                     if (!libraryItem.getDueDate().isPresent()) {
                         libraryItem.checkout(patronId);
-                        libraryItemConsumer.accept(libraryItem);
+                        Servicable.update(libraryItemConsumer, libraryItem);
                         return "<a href=\"" + libraryId + "\">" + libraryItem.getName() + "</a> was checked out from library " + libraryId + " by " + patronId;
                     }
                 } else if (buttonValue.equals("in")) {
                     libraryItem.checkin();
-                    libraryItemConsumer.accept(libraryItem);
+                    Servicable.update(libraryItemConsumer, libraryItem);
                 }
             }
             return null;
@@ -112,14 +112,18 @@ public class WebService {
                             .forEach(libraryItemConsumer);
                 }
             }
-            response.redirect(request.uri());
+            response.redirect("/library/" + libraryId);
             return "File uploaded";
         });
-    }
 
-    public static void main(String[] args) {
-        Store<LibraryItem> libraryItemStore = new Store<>(LibraryItemDatabase.getInstance());
-        new WebService(libraryItemStore,libraryItemStore).start();
+        notFound((req, res) -> {
+            res.redirect("/home");
+            return "page not found";
+        });
+
+        internalServerError((req, res) -> {
+            return "oops something went wrong!";
+        });
     }
 }
 
