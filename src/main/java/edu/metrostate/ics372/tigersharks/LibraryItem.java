@@ -15,7 +15,7 @@ import java.util.function.Predicate;
  */
 public class LibraryItem implements Loanable {
 
-    /**
+    /** testing...
      * get loan period in weeks based on type of item
      */
     private static final Function<Type, Long> getLoanPeriod = type -> type.compareTo(Type.BOOK) == 0 ? 3L : 1L;
