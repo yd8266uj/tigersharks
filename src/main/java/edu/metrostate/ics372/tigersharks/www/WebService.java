@@ -1,5 +1,6 @@
 package edu.metrostate.ics372.tigersharks.www;
 
+import com.google.gson.Gson;
 import edu.metrostate.ics372.tigersharks.LibraryItem;
 import edu.metrostate.ics372.tigersharks.Servicable;
 import edu.metrostate.ics372.tigersharks.io.Streamable;
@@ -15,7 +16,9 @@ import edu.metrostate.ics372.tigersharks.www.http.get.Upload;
 import javax.servlet.MultipartConfigElement;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -29,11 +32,31 @@ import static spark.Spark.*;
  */
 public class WebService {
 
-    /* path constants */
-    private static final String ENDPOINT_HOME = "/home";
-    private static final String ENDPOINT_ITEM = "/library/:libraryId/item/:itemId";
-    private static final String ENDPOINT_ITEMS = "/library/:libraryId";
-    private static final String ENDPOINT_UPLOAD = "/library/:libraryId//upload";
+    /* constants */
+
+    private static final String PATH_LIBRARY = "library";
+    private static final String PATH_HOME = "home";
+    private static final String PATH_UPLOAD = "upload";
+    private static final String PATH_ITEM = "item";
+
+    private static final String PARAM_LIBRARYID = ":libraryId";
+    private static final String PARAM_ITEMID = ":itemId";
+
+    private static final String ENDPOINT_HOME = "/" + PATH_HOME;
+    private static final String ENDPOINT_ITEM = "/" + PATH_LIBRARY + "/" + PARAM_LIBRARYID + "/" + PATH_ITEM + "/" + PARAM_ITEMID;
+    private static final String ENDPOINT_ITEMS = "/" + PATH_LIBRARY + "/" + PARAM_LIBRARYID;
+    private static final String ENDPOINT_UPLOAD = "/" + PATH_LIBRARY + "/" + PARAM_LIBRARYID + "/" + PATH_UPLOAD;
+
+    private static final String QUERYPARAM_RESPONSE_KEY = "r";
+    private static final String QUERYPARAM_RESPONSE_HTML = "html";
+    private static final String QUERYPARAM_RESPONSE_JSON = "json";
+    private static final String QUERYPARAM_TELEPHONE_KEY = "telephone";
+    private static final String QUERYPARAM_BUTTON_KEY = "button";
+    private static final String QUERYPARAM_BUTTON_OUT = "out";
+    private static final String QUERYPARAM_BUTTON_IN = "in";
+
+    private static final String RESPONSE_TYPE_JSON = "application/json";
+    private static final String RESPONSE_TYPE_HTML = "text/html";
 
     /**
      * supplies items to be filters or altered o
@@ -62,14 +85,25 @@ public class WebService {
     public void start() {
 
         /* show homepage with list of libraries */
-        get(ENDPOINT_HOME, (request, response) -> new Home().render());
+        get(ENDPOINT_HOME, (request, response) -> {
+            if(request.queryParams(QUERYPARAM_RESPONSE_KEY) != null) {
+                switch (request.queryParams(QUERYPARAM_RESPONSE_KEY)) {
+                    case QUERYPARAM_RESPONSE_JSON:
+                        response.type(RESPONSE_TYPE_JSON);
+                        return null;
+                    case QUERYPARAM_RESPONSE_HTML:
+                    default:
+                }
+            }
+            return new Home().render();
+        });
 
         /* show details of an item */
         get(ENDPOINT_ITEM, (request, response) -> {
 
             /* get parameters from url */
-            final String itemId = request.params(":itemId"); // current item id
-            final String libraryId = request.params(":libraryId"); // curent library id
+            final String itemId = request.params(PARAM_ITEMID); // current item id
+            final String libraryId = request.params(PARAM_LIBRARYID); // current library id
 
             /**
              * a potential match from the database
@@ -78,27 +112,40 @@ public class WebService {
                     libraryItem.getId().equals(itemId) && LibraryItem.isInLibrary(Integer.valueOf(libraryId)).test(libraryItem)); // look for current library and item id
 
             /* if we found one process it */
-            if(libraryItemOptional.isPresent()) { // if there is an item
+             // if there is an item
+            if(libraryItemOptional.isPresent()) {
+                if (request.queryParams(QUERYPARAM_RESPONSE_KEY) != null) {
+                    switch (request.queryParams(QUERYPARAM_RESPONSE_KEY)) {
+                        case QUERYPARAM_RESPONSE_JSON:
+                            response.type(RESPONSE_TYPE_JSON);
+                            Gson gson = new Gson();
+                            return gson.toJson(libraryItemOptional.get());
+                        case QUERYPARAM_RESPONSE_HTML:
+                        default:
+                            response.type(RESPONSE_TYPE_HTML);
+                    }
+                }
                 return new Item(libraryItemOptional.get()).render(); // generate a webpage with details and display
             }
-
             return null; // not a valid request
         });
 
         /* process request to check an item in or out */
         post(ENDPOINT_ITEM, (request, response) -> {
 
-            /* get paramters from url */
-            final String itemId = request.params(":itemId"); // current item id
-            final String libraryId = request.params(":libraryId"); // current library id
+            /* get parameters from url */
+            final String itemId = request.params(PARAM_ITEMID); // current item id
+            final String libraryId = request.params(PARAM_LIBRARYID); // current library id
+
 
             /* get fields from submitted form */
-            final String buttonValue = request.queryParams("button"); // was checkin or check out button pressed
+            final String buttonValue = request.queryParams(QUERYPARAM_BUTTON_KEY); // was checkin or check out button pressed
+            final String state = request.queryParams("s"); // we could do something with this if we needed to
             final String patronId; // the requesting library patron
-            if (buttonValue.equals("out")) { // if they are checking out
-                patronId = request.queryParams("telephone"); // set the patron id
+            if (buttonValue.equals(QUERYPARAM_BUTTON_OUT)) { // if they are checking out
+                patronId = request.queryParams(QUERYPARAM_TELEPHONE_KEY); // set the patron id
             } else { // otherwise
-                patronId = "";  // we dont care. also, there isnt one
+                patronId = null;  // we dont care. also, there isnt one
             }
 
             /**
@@ -115,16 +162,16 @@ public class WebService {
                 LibraryItem libraryItem = libraryItemOptional.get(); // get it
 
                 /* determine the type of request */
-                if (buttonValue.equals("out")) { // if checking out
+                if (buttonValue.equals(QUERYPARAM_BUTTON_OUT)) { // if checking out
 
                     if (!libraryItem.getDueDate().isPresent()) { // and it is not already checked out
 
                         libraryItem.checkout(patronId); // check out the current item
-                        Servicable.update(libraryItemConsumer, libraryItem); // and update the databse
+                        Servicable.update(libraryItemConsumer, libraryItem); // and update the database
 
-                        return "<a href=\"" + libraryId + "\">" + libraryItem.getName() + "</a> was checked out from library " + libraryId + " by " + patronId; // let stuborn browsers know what happened
+                        return null;
                     }
-                } else if (buttonValue.equals("in")) { // if this was a checkin request
+                } else if (buttonValue.equals(QUERYPARAM_BUTTON_IN)) { // if this was a checkin request
 
                     libraryItem.checkin(); // check the item in
                     Servicable.update(libraryItemConsumer, libraryItem); // update the database
@@ -135,25 +182,51 @@ public class WebService {
         });
 
         /* show all items at a library */
-        get(ENDPOINT_ITEMS, (request, response) -> new Items(Servicable.readAll(libraryItemStreamable).stream() // get all the items
-                .filter(LibraryItem.isInLibrary(Integer.valueOf(request.params(":libraryId")))) // filter by library
-                //.sorted(LibraryItem.sortByType.reversed()) // sort by item type
-                .sorted(LibraryItem.sortByName) // sort by item name
-                .collect(Collectors.toList()), // make into a list
-                request.params(":libraryId")).render()); // tell the page what library this is and display items
+        get(ENDPOINT_ITEMS, (request, response) -> {
+            List<LibraryItem> libraryItemList = Servicable.readAll(libraryItemStreamable).stream() // get all the items
+                    .filter(LibraryItem.isInLibrary(Integer.valueOf(request.params(PARAM_LIBRARYID)))) // filter by library
+                    //.sorted(LibraryItem.sortByType.reversed()) // sort by item type
+                    .sorted(LibraryItem.sortByName) // sort by item name
+                    .collect(Collectors.toList());
+
+            if (request.queryParams(QUERYPARAM_RESPONSE_KEY) != null) {
+                switch (request.queryParams(QUERYPARAM_RESPONSE_KEY)) {
+                    case QUERYPARAM_RESPONSE_JSON:
+                        response.type(RESPONSE_TYPE_JSON);
+                        Gson gson = new Gson();
+                        return libraryItemList.stream()
+                                .map(gson::toJson)
+                                .collect(Collectors.joining(",","[","]"));
+                    case QUERYPARAM_RESPONSE_HTML:
+                        response.type(RESPONSE_TYPE_HTML);
+                    default:
+                }
+            }
+            return new Items(libraryItemList, request.params(PARAM_LIBRARYID)).render(); // tell the page what library this is and display items
+        });
 
         /* show upload form for a library */
         get(ENDPOINT_UPLOAD, (request, response) -> {
 
             /* get parameters from url */
-            final String libraryId = request.params(":libraryId"); // the current library
+            final String libraryId = request.params(PARAM_LIBRARYID); // the current library
+
+            if(request.queryParams(QUERYPARAM_RESPONSE_KEY) != null) {
+                switch (request.queryParams(QUERYPARAM_RESPONSE_KEY)) {
+                    case QUERYPARAM_RESPONSE_JSON:
+                        response.type(RESPONSE_TYPE_JSON);
+                        return null;
+                    case QUERYPARAM_RESPONSE_HTML:
+                    default:
+                }
+            }
 
             return new Upload(libraryId).render(); // display a new upload page
         });
 
         /* process file upload */
         post(ENDPOINT_UPLOAD, (request, response) -> {
-            final String libraryId = request.params(":libraryId");
+            final String libraryId = request.params(PARAM_LIBRARYID);
             request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
             try (InputStream inputStream = request.raw().getPart("file").getInputStream()) {
                 final String fileName = request.raw()
@@ -169,19 +242,19 @@ public class WebService {
                             .forEach(libraryItemConsumer);
                 }
             }
-            response.redirect("/library/" + libraryId); //send back to current library browse
-            return "File uploaded";
+            response.redirect("/" + PATH_LIBRARY + "/" + libraryId); //send back to current library browse
+            return null;
         });
 
         /* page not found 404 */
         notFound((req, res) -> {
-            res.redirect("/home"); // send it home
+            res.redirect(ENDPOINT_HOME); // send it home
             return "page not found";
         });
 
         /* server error 500 */
         internalServerError((req, res) -> {
-            res.redirect("/home"); // send it home
+            res.redirect(ENDPOINT_HOME); // send it home
             return "oops something went wrong!";
         });
     }

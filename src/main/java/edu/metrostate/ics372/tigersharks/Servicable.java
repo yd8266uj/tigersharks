@@ -49,7 +49,7 @@ public interface Servicable<T> {
     }
 
     /**
-     * filter out all the stuff from read all to get a single item
+     * filter out all the stuff from read all to html a single item
      *
      * @param tStreamable the things from readall
      * @param tPredicate how are you filtering
@@ -73,7 +73,7 @@ public interface Servicable<T> {
     }
 
     /**
-     * alias for creat()
+     * alias for create()
      * @param tConsumer where things go
      * @param t a thing that needs to go
      */

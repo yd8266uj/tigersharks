@@ -56,7 +56,7 @@ public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
             if (jsonObject == null) {
                 throw new TigersharkException("unable to parse file", new ParseException(0));
             }
-            JSONArray jsonArray = (JSONArray) jsonObject.get(ROOT_ELEMENT); // parse file as json get library items as a list and add each element to data
+            JSONArray jsonArray = (JSONArray) jsonObject.get(ROOT_ELEMENT); // parse file as json html library items as a list and add each element to data
             if (jsonArray == null || jsonArray.size() == 0) {
                 throw new TigersharkException("no item data found", new ParseException(1));
             }

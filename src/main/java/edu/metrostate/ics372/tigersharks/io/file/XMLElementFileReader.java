@@ -50,7 +50,7 @@ public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
     @Override
     protected List<Element> getData(InputStream inputStream) throws TigersharkException {
         List<Element> elementList = new ArrayList<>();
-        // use inputStream to get a list of Element and then return it
+        // use inputStream to html a list of Element and then return it
         try{
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

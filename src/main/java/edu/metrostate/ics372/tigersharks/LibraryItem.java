@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.concurrent.locks.Condition;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -56,6 +57,11 @@ public class LibraryItem implements Loanable {
     public enum Type {CD,DVD,BOOK,MAGAZINE}
 
     /**
+     *Item States
+     */
+    public enum State {MISSING, SHELVING, REMOVED, REFERENCE}
+
+    /**
      * Item name
      */
     private final String name; // Not really used for anything. Ignoring get method
@@ -69,6 +75,11 @@ public class LibraryItem implements Loanable {
      * the type of this item
      */
     private final Type type;
+
+    /**
+     * the state of this item
+     */
+    private State state;
 
     /**
      * the library this item is in
@@ -86,6 +97,11 @@ public class LibraryItem implements Loanable {
     private LocalDate dueDate;
 
     /**
+     * Guard for non-final dueDate reference
+     */
+    private final Object dueDateLock = new Object();
+
+    /**
      * who has this item checked out
      */
     private String patronId;
@@ -98,10 +114,11 @@ public class LibraryItem implements Loanable {
      * @param name item name
      * @param itemId item identifier
      */
-    public LibraryItem(String itemId, String name, Type type, String metadata, Integer libraryId, LocalDate dueDate, String patronId) {
+    public LibraryItem(String itemId, String name, Type type, State state, String metadata, Integer libraryId, LocalDate dueDate, String patronId) {
         this.name = name;
         this.id = itemId;
         this.type = type;
+        this.state = state;
         this.metadata = metadata;
         this.libraryId = libraryId;
         if (dueDate == null) {
@@ -138,6 +155,15 @@ public class LibraryItem implements Loanable {
      */
     public String getType() {
         return type.name();
+    }
+
+    /**
+     * getter for state as string value
+     *
+     * @return state string
+     */
+    public String getState(){
+        return state.name();
     }
 
     /**
@@ -184,13 +210,21 @@ public class LibraryItem implements Loanable {
     }
 
     /**
+     * setterfor State
+     */
+    public void setState(State state){
+        this.state = state;
+    }
+
+
+    /**
      * Try to check out item
      *
      * @return due date if there is one
      */
     public Optional<LocalDate> checkout(String patronId) {
         if (dueDate.compareTo(LocalDate.MIN) == 0) {
-            synchronized (dueDate) {
+            synchronized (dueDateLock) {
                 if (dueDate.compareTo(LocalDate.MIN) == 0) {
                     dueDate = LocalDate.now().plus(getLoanPeriod.apply(type), ChronoUnit.WEEKS); //this should be adjust
                     this.patronId = patronId;
@@ -208,7 +242,7 @@ public class LibraryItem implements Loanable {
      */
     public boolean checkin() {
         if (dueDate.compareTo(LocalDate.MIN) != 0) {
-            synchronized (dueDate) {
+            synchronized (dueDateLock) {
                 if (dueDate.compareTo(LocalDate.MIN) != 0) {
                     dueDate = LocalDate.MIN;
                     this.patronId = null;

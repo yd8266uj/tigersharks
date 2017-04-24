@@ -23,7 +23,7 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
     private static final String databaseDirectory = "database";
     private static final String databaseDriver = "sqlite";
     private static final String tableName = "library";
-    private static final String columnList = "id, name, type, metadata,libraryId, dueDate, patronId";
+    private static final String columnList = "id, name, type, state, metadata, libraryId, dueDate, patronId";
 
     private static class SingletonHolder {
         static LibraryItemDatabase instance = new LibraryItemDatabase();
@@ -71,6 +71,7 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
                         resultSet.getString("id"),
                         resultSet.getString("name"),
                         LibraryItem.Type.valueOf(resultSet.getString("type")),
+                        LibraryItem.State.valueOf(resultSet.getString("state")),
                         resultSet.getString("metadata"),
                         resultSet.getInt("libraryId"),
                         dueDate,
@@ -88,12 +89,13 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
         final String id = libraryItem.getId();
         final String name = libraryItem.getName();
         final String type = libraryItem.getType();
+        final String state = libraryItem.getState();
         final Optional<String> metadataOptional = libraryItem.getMetadata();
         final Optional<Integer> libraryIdOptional = libraryItem.getLibraryId();
         final Optional<LocalDate> dueDateOptional = libraryItem.getDueDate();
         final Optional<String> patronIdOptional = libraryItem.getPatronId();
 
-        final String sql = "INSERT OR REPLACE INTO " + tableName + "(" + columnList + ") VALUES (?,?,?,?,?,?,?);";
+        final String sql = "INSERT OR REPLACE INTO " + tableName + "(" + columnList + ") VALUES (?,?,?,?,?,?,?,?);";
 
         try {
             if(!tableExists()) {
@@ -103,21 +105,22 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
             preparedStatement.setString(1, id);
             preparedStatement.setString(2, name);
             preparedStatement.setString(3, type);
+            preparedStatement.setString(4, state);
             if (metadataOptional.isPresent()) {
-                preparedStatement.setString(4, metadataOptional.get());
+                preparedStatement.setString(5, metadataOptional.get());
             }
             if (libraryIdOptional.isPresent()) {
-                preparedStatement.setInt(5, libraryIdOptional.get());
+                preparedStatement.setInt(6, libraryIdOptional.get());
             } else {
-                preparedStatement.setNull(5, Types.INTEGER);
+                preparedStatement.setNull(6, Types.INTEGER);
             }
             if (dueDateOptional.isPresent()) {
-                preparedStatement.setString(6, dueDateOptional.get().format(DateTimeFormatter.BASIC_ISO_DATE));
+                preparedStatement.setString(7, dueDateOptional.get().format(DateTimeFormatter.BASIC_ISO_DATE));
             }
             if (patronIdOptional.isPresent()) {
-                preparedStatement.setString(7, patronIdOptional.get());
+                preparedStatement.setString(8, patronIdOptional.get());
             } else {
-                preparedStatement.setNull(7, Types.INTEGER);
+                preparedStatement.setNull(8, Types.INTEGER);
             }
             preparedStatement.execute();
         } catch (SQLException e) {
@@ -130,6 +133,7 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
                 "id    TEXT NOT NULL," +
                 "name    TEXT NOT NULL," +
                 "type    TEXT NOT NULL," +
+                "state    TEXT NOT NULL," +
                 "metadata    TEXT," +
                 "libraryId    INTEGER NOT NULL," +
                 "dueDate    TEXT," +
@@ -149,33 +153,5 @@ public class LibraryItemDatabase implements Database<LibraryItem> {
             e.printStackTrace();
         }
         return tableExists;
-    }
-
-    public static void main(String[] args) {
-        LibraryItemDatabase libraryItemDatabase = new LibraryItemDatabase();
-        LibraryItem libraryItem = new LibraryItem("abc123", "The Similiaron", LibraryItem.Type.BOOK,"J.R,R Tolkien",1,null,"");
-        Optional<LocalDate> dueDate = libraryItem.getDueDate();
-        if (dueDate.isPresent()) {
-            System.out.println(dueDate.get());
-        } else {
-            System.out.println("null");
-        }
-        libraryItem.checkout("test patron");
-        dueDate = libraryItem.getDueDate();
-        if (dueDate.isPresent()) {
-            System.out.println(dueDate.get());
-        } else {
-            System.out.println("null");
-        }
-        libraryItem.checkin();
-        dueDate = libraryItem.getDueDate();
-        if (dueDate.isPresent()) {
-            System.out.println(dueDate.get());
-        } else {
-            System.out.println("null");
-        }
-        libraryItemDatabase.update(libraryItem);
-        List<LibraryItem> libraryItemList = libraryItemDatabase.selectAll();
-        System.out.println(libraryItemList.size());
     }
 }
