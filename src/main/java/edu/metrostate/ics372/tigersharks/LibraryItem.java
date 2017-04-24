@@ -59,7 +59,7 @@ public class LibraryItem implements Loanable {
     /**
      *Item States
      */
-    public enum State {MISSING, SHELVING, REMOVED, REFERENCE}
+    public enum State {OKAY, MISSING, SHELVING, REMOVED, REFERENCE}
 
     /**
      * Item name

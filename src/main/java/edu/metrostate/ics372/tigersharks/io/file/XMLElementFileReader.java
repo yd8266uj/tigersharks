@@ -103,6 +103,8 @@ public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
                 return Optional.empty();
             }
 
+            final LibraryItem.State state = LibraryItem.State.OKAY;
+
             final String metadata;
             /*  */
             if (type.compareTo(LibraryItem.Type.CD) == 0) {
@@ -136,7 +138,7 @@ public class XMLElementFileReader extends FileReader<Element, LibraryItem> {
                 metadata = null;
             }
 
-            return Optional.of(new LibraryItem(id, name, type, metadata, libraryId, null, null)); //
+            return Optional.of(new LibraryItem(id, name, type, state, metadata, libraryId, null, null)); //
         };
     }
 }

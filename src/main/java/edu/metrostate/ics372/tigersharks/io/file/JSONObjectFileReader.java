@@ -94,6 +94,8 @@ public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
                 return Optional.empty();
             }
 
+            final LibraryItem.State state = LibraryItem.State.OKAY;
+
             final String metadata;
             if(type.compareTo(LibraryItem.Type.CD) == 0) {
                 if(!jsonObject.containsKey(KEY_ARTIST)) {
@@ -120,7 +122,7 @@ public class JSONObjectFileReader extends FileReader<JSONObject, LibraryItem> {
                 metadata = null;
             }
 
-            return Optional.of(new LibraryItem(id, name, type, metadata, libraryId, null, null));
+            return Optional.of(new LibraryItem(id, name, type, state, metadata, libraryId, null, null));
         };
     }
 }
