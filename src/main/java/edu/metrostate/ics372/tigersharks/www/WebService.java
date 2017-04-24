@@ -48,6 +48,7 @@ public class WebService {
     private static final String ENDPOINT_UPLOAD = "/" + PATH_LIBRARY + "/" + PARAM_LIBRARYID + "/" + PATH_UPLOAD;
 
     private static final String QUERYPARAM_RESPONSE_KEY = "r";
+    private static final String QUERYPARAM_STATE_KEY = "r";
     private static final String QUERYPARAM_RESPONSE_HTML = "html";
     private static final String QUERYPARAM_RESPONSE_JSON = "json";
     private static final String QUERYPARAM_TELEPHONE_KEY = "telephone";
@@ -140,7 +141,7 @@ public class WebService {
 
             /* get fields from submitted form */
             final String buttonValue = request.queryParams(QUERYPARAM_BUTTON_KEY); // was checkin or check out button pressed
-            final String state = request.queryParams("s"); // we could do something with this if we needed to
+            final String state = request.queryParams(QUERYPARAM_STATE_KEY); // we could do something with this if we needed to
             final String patronId; // the requesting library patron
             if (buttonValue.equals(QUERYPARAM_BUTTON_OUT)) { // if they are checking out
                 patronId = request.queryParams(QUERYPARAM_TELEPHONE_KEY); // set the patron id
